@@ -1,0 +1,81 @@
+text,category
+"I was charged twice for my subscription this month",Billing
+"My payment did not go through but the money was deducted",Billing
+"I need a refund for the incorrect charge on my account",Billing
+"Can you explain my invoice from last month?",Billing
+"I was billed the wrong amount",Billing
+"My credit card was charged but I did not receive the service",Billing
+"I want to cancel my subscription and get a refund",Billing
+"How do I update my billing information?",Billing
+"I see an unauthorized charge on my statement",Billing
+"My bill is higher than what was quoted to me",Billing
+"I cannot afford the new pricing plan please help",Billing
+"The discount code did not apply to my order",Billing
+"I am being charged for a plan I downgraded from",Billing
+"Please send me a receipt for my last payment",Billing
+"I need a detailed breakdown of all my charges",Billing
+"Why is my invoice showing a different amount than expected",Billing
+"I have been overcharged for the past three months",Billing
+"My free trial ended but I was still charged",Billing
+"I need to dispute a charge on my account",Billing
+"The promo code I entered is not working at checkout",Billing
+"The application keeps crashing whenever I try to upload a file",Technical
+"I am getting a 500 internal server error on your website",Technical
+"The login page is broken and I cannot sign in",Technical
+"My data is not syncing across devices",Technical
+"The API returns an error when I try to integrate it",Technical
+"The mobile app crashes on startup every time I open it",Technical
+"I cannot export my reports as PDF",Technical
+"The search functionality is not returning any results",Technical
+"Notifications are not working on my device",Technical
+"The video playback is constantly buffering",Technical
+"I get a 404 error when I click on certain links",Technical
+"The dashboard widgets are not loading any data",Technical
+"My account is showing incorrect usage statistics",Technical
+"The two-factor authentication code is not being sent",Technical
+"I cannot connect to the platform using my API key",Technical
+"The browser extension stopped working after the last update",Technical
+"Files uploaded to the platform are corrupted or missing",Technical
+"The email integration is not syncing my inbox correctly",Technical
+"The app is very slow and takes minutes to load",Technical
+"I am getting a SSL certificate error on your website",Technical
+"I cannot log into my account even though my password is correct",Account
+"My account was suspended without any prior warning",Account
+"I want to delete my account and all associated data",Account
+"I need to change the email address on my account",Account
+"I forgot my password and the reset email is not arriving",Account
+"My profile picture is not updating",Account
+"I want to transfer my account ownership to a colleague",Account
+"I need to merge two of my accounts together",Account
+"My account has been hacked and I need to secure it",Account
+"I cannot change my username in the settings",Account
+"My subscription is not reflecting on my account",Account
+"I cannot access my old account after creating a new one",Account
+"How do I enable two-factor authentication for my account?",Account
+"My account permissions are not matching what I was given",Account
+"I need a copy of all data stored on my account",Account
+"I was locked out of my account after too many failed login attempts",Account
+"My organization account is showing wrong team members",Account
+"I need to set up single sign-on for my company account",Account
+"I cannot close or archive my old account",Account
+"How do I downgrade my account to the free plan?",Account
+"What are the differences between your pricing plans?",General
+"How do I get started with your platform?",General
+"Where can I find the documentation for your product?",General
+"Do you offer a free trial or demo?",General
+"What are your business hours and support availability?",General
+"I would like to provide feedback about your service",General
+"Can I use your platform for commercial purposes?",General
+"Do you support integration with third-party tools?",General
+"What is the maximum file size I can upload?",General
+"How does your platform handle data privacy and security?",General
+"I want to know more about the enterprise plan",General
+"How many users can I add to my team?",General
+"Is your platform available in languages other than English?",General
+"Can I white-label your product for my clients?",General
+"What happens to my data if I cancel my subscription?",General
+"How do I contact your sales team?",General
+"I would like to request a feature that is not yet available",General
+"Are there any tutorials or onboarding resources available?",General
+"What kind of support is included with the basic plan?",General
+"I am looking for a solution for my small business",General
