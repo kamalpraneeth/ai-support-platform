@@ -53,7 +53,7 @@ app = FastAPI(
     title="AI-Powered Customer Support Platform",
     description=(
         "Classifies support tickets by category, urgency, and sentiment, "
-        "then generates AI-drafted replies using Groq (llama3-8b-8192)."
+        "then generates AI-drafted replies using Groq (llama-3.1-8b-instant)."
     ),
     version="1.0.0",
     lifespan=lifespan,

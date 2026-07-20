@@ -24,7 +24,7 @@ Customer support teams are overwhelmed by unclassified tickets. This platform au
 | ML — Classification | scikit-learn (TF-IDF + Logistic Regression) |
 | ML — Urgency | Rule-based keyword scoring |
 | ML — Sentiment | VADER (vaderSentiment) |
-| AI Reply | Groq API (`llama3-8b-8192`) with static fallback |
+| AI Reply | Groq API (`llama-3.1-8b-instant`) with static fallback |
 | Database | SQLite + SQLAlchemy ORM |
 | Frontend | Plain HTML + Vanilla JS + Tailwind CSS (CDN) |
 | Testing | pytest + FastAPI TestClient (httpx) |
@@ -89,10 +89,11 @@ source .venv/bin/activate
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Set up environment variables
-cp .env.example .env
-# Edit .env and add your GROQ_API_KEY
-# Get a free key at: https://console.groq.com
+# 4. Create .env from the template (then add your real key inside it)
+Copy-Item .env.example .env
+# Open .env in a text editor and replace:
+#   GROQ_API_KEY=your_groq_api_key_here
+# with your actual key from https://console.groq.com
 
 # 5. Train the classifier (creates models/classifier.pkl)
 python -m app.ml.train

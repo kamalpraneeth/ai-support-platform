@@ -1,5 +1,5 @@
 """
-AI Reply Generator: uses Groq's API (llama3-8b-8192 model) to draft
+AI Reply Generator: uses Groq's API (llama-3.1-8b-instant model) to draft
 a professional customer support reply for a given ticket.
 
 Fallback behaviour:
@@ -49,7 +49,10 @@ def generate_reply(ticket_text: str) -> tuple[str, bool]:
     api_key: Optional[str] = os.getenv("GROQ_API_KEY")
 
     if not api_key:
-        logger.warning("GROQ_API_KEY not set — returning fallback reply.")
+        logger.warning(
+            "GROQ_API_KEY not set — returning fallback reply. "
+            "Add GROQ_API_KEY to your .env file to enable AI-generated replies."
+        )
         return FALLBACK_REPLY, False
 
     try:
@@ -57,7 +60,7 @@ def generate_reply(ticket_text: str) -> tuple[str, bool]:
 
         client = Groq(api_key=api_key)
         response = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": f"Customer ticket:\n{ticket_text}"},
@@ -66,8 +69,14 @@ def generate_reply(ticket_text: str) -> tuple[str, bool]:
             temperature=0.7,
         )
         reply = response.choices[0].message.content.strip()
+        logger.info("Groq reply generated successfully (%d chars).", len(reply))
         return reply, True
 
     except Exception as exc:
-        logger.error("Groq API call failed: %s — returning fallback reply.", exc)
+        # Log exception type so auth/network/rate-limit errors are distinguishable
+        logger.error(
+            "Groq API call failed [%s]: %s — returning fallback reply.",
+            type(exc).__name__,
+            exc,
+        )
         return FALLBACK_REPLY, False
