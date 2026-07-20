@@ -179,7 +179,7 @@ curl -X POST http://localhost:8000/ticket/reply \
 pytest tests/ -v
 ```
 
-Expected output: **33 tests passing** (15 ML unit tests + 18 API integration tests).
+Expected output: **34 passed** (18 API integration tests + 16 ML unit tests).
 
 The test suite uses an in-memory SQLite database and does **not** require a `GROQ_API_KEY` — the fallback path is tested explicitly.
 
@@ -220,7 +220,6 @@ docker run -p 8000:8000 \
 
 ## Screenshot
 
-<!-- Replace with actual screenshot after first deployment -->
 ![App Screenshot](screenshot.png)
 
 ---
