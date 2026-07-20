@@ -156,7 +156,7 @@ def get_ticket_reply(payload: ReplyRequest, db: Session = Depends(get_db)):
 
     - **ticket_id**: The ID returned by POST /ticket.
 
-    Uses Groq (llama3-8b-8192). Falls back to a static professional
+    Uses Groq (llama-3.1-8b-instant). Falls back to a static professional
     template if the API key is not set or the call fails.
     """
     ticket = db.query(Ticket).filter(Ticket.id == payload.ticket_id).first()

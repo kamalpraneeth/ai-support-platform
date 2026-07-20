@@ -12,7 +12,7 @@ Customer support teams are overwhelmed by unclassified tickets. This platform au
 1. **Classifies** each ticket into a category (Billing / Technical / Account / General)
 2. **Scores urgency** (High / Medium / Low) using rule-based keyword detection
 3. **Analyses sentiment** (Positive / Neutral / Negative) using VADER
-4. **Drafts a reply** using Groq's `llama3-8b-8192` model, with a graceful fallback if the API is unavailable
+4. **Drafts a reply** using Groq's `llama-3.1-8b-instant` model, with a graceful fallback if the API is unavailable
 
 ---
 
