@@ -1,6 +1,6 @@
 # AI-Powered Customer Support Platform
 
-[![CI](https://github.com/YOUR_USERNAME/ai-support-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/ai-support-platform/actions)
+[![CI](https://github.com/kamalpraneeth/ai-support-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/kamalpraneeth/ai-support-platform/actions)
 
 A full-stack portfolio project demonstrating ML classification, NLP, REST API design, and GenAI integration — built to showcase skills for **Software Engineer, Backend, Full Stack, AI/ML, and Gen AI** roles.
 
