@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Support Platform — Submit a Ticket</title>
+  <meta name="description" content="AI-powered customer support ticket classifier. Submit your issue and get instant category, urgency, sentiment analysis plus an AI-drafted reply." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out',
+            'slide-up': 'slideUp 0.4s ease-out',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            slideUp: { '0%': { opacity: '0', transform: 'translateY(16px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+    .badge-animate { transition: all 0.2s ease; }
+    .badge-animate:hover { transform: scale(1.05); }
+    textarea { resize: vertical; min-height: 120px; }
+    #reply-text { white-space: pre-wrap; }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100">
+
+  <!-- Background decoration -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse-slow"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-violet-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse-slow"></div>
+  </div>
+
+  <div class="relative z-10 max-w-2xl mx-auto px-4 py-12">
+
+    <!-- Header -->
+    <header class="text-center mb-10 animate-fade-in">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 mb-4 shadow-lg shadow-indigo-500/30">
+        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+      </div>
+      <h1 class="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+        AI Support Platform
+      </h1>
+      <p class="mt-2 text-slate-400 text-sm">
+        Powered by TF-IDF · VADER · Groq llama3-8b
+      </p>
+    </header>
+
+    <!-- ── Ticket Submission Card (shadcn/ui Card pattern) ── -->
+    <div id="submit-card" class="glass rounded-2xl p-6 shadow-2xl animate-slide-up">
+
+      <!-- Card Header -->
+      <div class="mb-5">
+        <h2 class="text-lg font-semibold text-white">Submit a Support Ticket</h2>
+        <p class="text-sm text-slate-400 mt-0.5">
+          Describe your issue and our AI will classify it instantly.
+        </p>
+      </div>
+
+      <!-- Card Content -->
+      <form id="ticket-form" novalidate>
+        <div class="space-y-4">
+
+          <!-- Textarea (shadcn/ui Input pattern) -->
+          <div>
+            <label for="ticket-input" class="block text-sm font-medium text-slate-300 mb-1.5">
+              Your issue
+            </label>
+            <textarea
+              id="ticket-input"
+              name="text"
+              placeholder="e.g. I was charged twice for my subscription this month and need an urgent refund..."
+              class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              required
+              minlength="5"
+            ></textarea>
+            <p id="input-error" class="text-red-400 text-xs mt-1 hidden">Please describe your issue (at least 5 characters).</p>
+          </div>
+
+          <!-- Submit Button (shadcn/ui Button pattern) -->
+          <button
+            id="submit-btn"
+            type="submit"
+            class="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-sm font-medium px-4 py-2.5 transition-all duration-200 shadow-lg shadow-indigo-500/25 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg id="btn-icon" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+            <span id="btn-text">Analyse Ticket</span>
+          </button>
+
+        </div>
+      </form>
+    </div>
+
+    <!-- ── Results Card (hidden until response) ── -->
+    <div id="results-card" class="glass rounded-2xl p-6 shadow-2xl mt-4 hidden animate-slide-up">
+
+      <!-- Card Header -->
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="text-lg font-semibold text-white">Analysis Results</h2>
+          <p class="text-sm text-slate-400 mt-0.5">Ticket #<span id="ticket-id">—</span></p>
+        </div>
+        <div id="ai-badge-wrapper"></div>
+      </div>
+
+      <!-- Badges Row (shadcn/ui Badge pattern) -->
+      <div class="flex flex-wrap gap-2 mb-6">
+
+        <!-- Category Badge -->
+        <div class="badge-animate">
+          <span class="text-xs font-medium text-slate-400 block mb-1">Category</span>
+          <span id="badge-category"
+            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset bg-indigo-500/10 text-indigo-300 ring-indigo-500/30">
+            —
+          </span>
+        </div>
+
+        <!-- Urgency Badge -->
+        <div class="badge-animate">
+          <span class="text-xs font-medium text-slate-400 block mb-1">Urgency</span>
+          <span id="badge-urgency"
+            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset">
+            —
+          </span>
+        </div>
+
+        <!-- Sentiment Badge -->
+        <div class="badge-animate">
+          <span class="text-xs font-medium text-slate-400 block mb-1">Sentiment</span>
+          <span id="badge-sentiment"
+            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset">
+            —
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t border-slate-700/50 mb-5"></div>
+
+      <!-- AI Reply Section -->
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          <h3 class="text-sm font-semibold text-white">AI-Drafted Reply</h3>
+          <div id="reply-loading" class="hidden flex items-center gap-1.5 ml-auto">
+            <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay:0s"></div>
+            <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay:0.15s"></div>
+            <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay:0.3s"></div>
+          </div>
+        </div>
+        <div id="reply-text"
+          class="text-sm text-slate-300 leading-relaxed bg-slate-800/40 rounded-lg p-4 border border-slate-700/50 min-h-[80px]">
+          Generating reply…
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Error toast -->
+    <div id="error-toast"
+      class="fixed bottom-6 right-6 bg-red-900/90 border border-red-700 text-red-200 text-sm rounded-xl px-4 py-3 shadow-2xl hidden animate-slide-up max-w-xs">
+      <strong>Error:</strong> <span id="error-msg">Something went wrong.</span>
+    </div>
+
+  </div><!-- /container -->
+
+  <script>
+    // ── Helpers ─────────────────────────────────────────────────────────────
+
+    const $ = id => document.getElementById(id);
+
+    function showError(msg) {
+      $('error-msg').textContent = msg;
+      $('error-toast').classList.remove('hidden');
+      setTimeout(() => $('error-toast').classList.add('hidden'), 5000);
+    }
+
+    function setLoading(isLoading) {
+      const btn = $('submit-btn');
+      btn.disabled = isLoading;
+      $('btn-text').textContent = isLoading ? 'Analysing…' : 'Analyse Ticket';
+    }
+
+    // Badge colour helpers (shadcn/ui-inspired ring+bg pattern)
+    const urgencyStyles = {
+      High:   'bg-red-500/10 text-red-300 ring-red-500/30',
+      Medium: 'bg-amber-500/10 text-amber-300 ring-amber-500/30',
+      Low:    'bg-green-500/10 text-green-300 ring-green-500/30',
+    };
+    const sentimentStyles = {
+      Positive: 'bg-emerald-500/10 text-emerald-300 ring-emerald-500/30',
+      Neutral:  'bg-slate-500/10 text-slate-300 ring-slate-500/30',
+      Negative: 'bg-rose-500/10 text-rose-300 ring-rose-500/30',
+    };
+
+    function applyBadge(elementId, text, styleMap, defaultStyle) {
+      const el = $(elementId);
+      el.textContent = text;
+      // Reset classes first
+      el.className = 'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset';
+      el.className += ' ' + (styleMap[text] || defaultStyle);
+    }
+
+    // ── Form Submit ──────────────────────────────────────────────────────────
+
+    $('ticket-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const text = $('ticket-input').value.trim();
+
+      // Client-side validation
+      if (text.length < 5) {
+        $('input-error').classList.remove('hidden');
+        return;
+      }
+      $('input-error').classList.add('hidden');
+
+      setLoading(true);
+      $('results-card').classList.add('hidden');
+
+      try {
+        // ── Step 1: POST /ticket ────────────────────────────────────────────
+        const ticketRes = await fetch('/ticket', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+
+        if (!ticketRes.ok) {
+          const err = await ticketRes.json().catch(() => ({}));
+          throw new Error(err.detail || `Server error ${ticketRes.status}`);
+        }
+
+        const ticket = await ticketRes.json();
+
+        // ── Populate badges ─────────────────────────────────────────────────
+        $('ticket-id').textContent = ticket.id;
+        applyBadge('badge-category', ticket.category, {}, 'bg-indigo-500/10 text-indigo-300 ring-indigo-500/30');
+        applyBadge('badge-urgency', ticket.urgency, urgencyStyles, 'bg-slate-500/10 text-slate-300 ring-slate-500/30');
+        applyBadge('badge-sentiment', ticket.sentiment, sentimentStyles, 'bg-slate-500/10 text-slate-300 ring-slate-500/30');
+
+        $('reply-text').textContent = 'Generating reply…';
+        $('reply-loading').classList.remove('hidden');
+        $('results-card').classList.remove('hidden');
+
+        setLoading(false);
+
+        // ── Step 2: POST /ticket/reply ──────────────────────────────────────
+        const replyRes = await fetch('/ticket/reply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticket_id: ticket.id }),
+        });
+
+        $('reply-loading').classList.add('hidden');
+
+        if (!replyRes.ok) {
+          $('reply-text').textContent = '⚠ Could not generate reply. Please try again.';
+          return;
+        }
+
+        const replyData = await replyRes.json();
+        $('reply-text').textContent = replyData.reply;
+
+        // Show whether the reply is AI or fallback
+        $('ai-badge-wrapper').innerHTML = replyData.is_ai_generated
+          ? `<span class="inline-flex items-center gap-1 text-xs font-medium bg-violet-500/10 text-violet-300 ring-1 ring-violet-500/30 rounded-full px-2.5 py-0.5">
+               <span class="w-1.5 h-1.5 rounded-full bg-violet-400 inline-block"></span> AI Reply
+             </span>`
+          : `<span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-500/10 text-slate-400 ring-1 ring-slate-500/30 rounded-full px-2.5 py-0.5">
+               Template Reply
+             </span>`;
+
+      } catch (err) {
+        setLoading(false);
+        showError(err.message || 'Unexpected error. Check the console.');
+        console.error(err);
+      }
+    });
+  </script>
+
+</body>
+</html>
