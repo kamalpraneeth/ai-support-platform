@@ -218,9 +218,11 @@ docker run -p 8000:8000 \
 
 ---
 
-## Screenshot
+## Screenshots
 
-![App Screenshot](screenshot.png)
+| Submit a Ticket | Analysis Results + AI Reply |
+|---|---|
+| ![Form View](screenshot1.png) | ![Results View](screenshot2.png) |
 
 ---
 
