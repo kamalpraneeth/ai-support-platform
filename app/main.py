@@ -105,7 +105,7 @@ class ReplyResponse(BaseModel):
 # Routes
 # ---------------------------------------------------------------------------
 
-@app.get("/health", tags=["System"])
+@app.api_route("/health", methods=["GET", "HEAD"], tags=["System"])
 def health_check():
     """Basic health check — used by Render and Docker HEALTHCHECK."""
     return {"status": "ok", "version": "1.0.0"}
