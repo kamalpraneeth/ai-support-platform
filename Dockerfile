@@ -40,7 +40,7 @@ EXPOSE 8000
 
 # Health check — Render also monitors /health via HTTP
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+  CMD python -c "import urllib.request, os; port = os.environ.get('PORT', '8000'); urllib.request.urlopen(f'http://localhost:{port}/health')"
 
 # Start the server
 # Use $PORT for Render compatibility (Render sets PORT automatically)
