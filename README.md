@@ -238,6 +238,12 @@ docker run -p 8000:8000 \
 | classifier.pkl committed | Reviewers can clone and run immediately without retraining |
 | Single-container Docker | Simplest possible deployment — one `docker run` starts everything |
 
+### Known Limitations
+
+| Limitation | Rationale & Future Improvement |
+|---|---|
+| VADER misses circumstantial/contextual negativity (e.g., "internet down before an exam" with no negative keywords) | Lexicon-based sentiment lacks semantic understanding; a transformer model (e.g., DistilBERT fine-tuned on support tickets) would capture this, at the cost of speed/simplicity |
+
 ---
 
 ## License
