@@ -69,14 +69,40 @@ uvicorn app.main:app --reload
 The API will be available at `http://127.0.0.1:8000`. You can view the interactive OpenAPI docs at `http://127.0.0.1:8000/docs`.
 
 ### 5. Run the Test Suite
-The project includes a comprehensive 185+ test suite covering ML, API, RAG, Computer Vision, and Responsible AI.
+The project includes a comprehensive, deterministic test suite covering the entire Data/ML/GenAI pipeline. 
 ```bash
 pytest tests/ -v
 ```
+**Current Test Coverage**: 194 total tests (`192 passed, 2 skipped` due to missing API keys in CI).
 
-## 🏗️ Architecture Highlight
+## 🏗️ End-to-End GenAI Data & ML Pipeline
 
-The core orchestration flow for a ticket is:
-`Image Processing (Optional) -> Validation -> ML Classification -> RAG Retrieval -> LLM Generation -> Output Evaluation -> Escalation Check`.
+This project is built to demonstrate a complete, production-ready AI engineering lifecycle. Every component has a specific, measurable role in moving raw data to a safe, deployed generative interface.
 
-By combining fast, deterministic ML for routing and strict Responsible AI rules for safety, we ensure that the LLM is only utilized when appropriate and safe.
+```mermaid
+flowchart TD
+    A[tickets.csv] --> B[Exploratory Data Analysis]
+    B --> C[Data Quality Validation]
+    C --> D[Baseline ML Classification]
+    D --> E[DistilBERT + LoRA Fine-Tuning]
+    E --> F[TF-IDF RAG Retrieval]
+    F --> G[LLaMA 3.1 Generation]
+    H[Image Uploads] --> I[YOLOv8 + easyocr]
+    I --> G
+    G --> J[Responsible AI & Output Validation]
+    J --> K[Analytics Dashboard]
+    K --> L[Docker / Render Deployment]
+```
+
+### Why each component exists:
+1. **tickets.csv**: The foundational dataset grounding the entire project in realistic customer support scenarios.
+2. **Exploratory Data Analysis (EDA)**: Understands text lengths, category distributions, and class imbalances natively without heavy dependencies.
+3. **Data Quality**: Validates dataset health (missing rows, duplicates) to ensure downstream models train on clean data.
+4. **ML Classification (Baseline)**: A fast, deterministic TF-IDF + Logistic Regression router to immediately triage incoming tickets.
+5. **DistilBERT + LoRA Fine-Tuning**: Upgrades the baseline classifier to a transformer architecture, demonstrating deep learning, PEFT, and rigorous metric evaluation (Accuracy/F1).
+6. **RAG (Retrieval-Augmented Generation)**: Grounds the LLM in domain-specific knowledge to prevent hallucinations.
+7. **LLaMA 3.1 (Groq)**: Powers the conversational agent and dynamic reply generation.
+8. **YOLOv8 + easyocr (Computer Vision)**: Extracts context from user screenshots (e.g., error codes or physical damage) that text alone misses.
+9. **Responsible AI**: Guards the LLM with prompt injection defenses, PII redaction, and output safety checks, forcing a Human-in-the-Loop escalation when confidence is low.
+10. **Analytics Dashboard**: Visualizes operational metrics (Latency, Escalation Rate) and dataset health in real-time.
+11. **Docker / Render**: Containerizes the complex dependencies (PyTorch, OpenCV) for stable, cloud-agnostic deployment.

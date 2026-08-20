@@ -648,3 +648,30 @@ def ml_metrics():
     cross-validation scores. Computed from actual training execution.
     """
     return get_model_metrics()
+
+
+@app.get("/analytics/eda", tags=["Analytics"])
+def get_eda():
+    """
+    Exploratory Data Analysis metrics from the raw dataset.
+    """
+    from app.analytics.eda import generate_eda_report
+    return generate_eda_report()
+
+
+@app.get("/analytics/data-quality", tags=["Analytics"])
+def get_data_quality():
+    """
+    Data quality percentage metrics from the raw dataset.
+    """
+    from app.analytics.data_quality import evaluate_data_quality
+    return evaluate_data_quality()
+
+
+@app.get("/analytics/insights", tags=["Analytics"])
+def get_insights():
+    """
+    Automated text insights generated from EDA and data quality.
+    """
+    from app.analytics.insights import generate_automated_insights
+    return generate_automated_insights()

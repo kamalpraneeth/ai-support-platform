@@ -206,73 +206,106 @@
     <div id="view-analytics" class="hidden animate-fade-in w-full">
       <header class="mb-6">
         <h1 class="text-2xl font-bold tracking-tight text-white">System Analytics</h1>
-        <p class="text-slate-400 text-sm">Real-time platform metrics and ML evaluation data.</p>
+        <p class="text-slate-400 text-sm">Real-time platform metrics, dataset EDA, and ML evaluation data.</p>
       </header>
 
+      <!-- Automated Insights Bar -->
+      <div id="automated-insights-banner" class="glass rounded-xl p-4 shadow-lg mb-6 border-l-4 border-indigo-500 hidden">
+        <h3 class="text-sm font-semibold text-indigo-300 mb-2 flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          Automated Insights
+        </h3>
+        <ul id="automated-insights-list" class="list-disc list-inside text-sm text-slate-300 space-y-1">
+          <!-- Rendered via JS -->
+        </ul>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <!-- Ticket Stats -->
+        <!-- 1. Data Analytics & EDA -->
         <div class="glass rounded-xl p-5 shadow-lg">
           <h2 class="text-sm font-semibold text-indigo-300 mb-4 flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-            Ticket Volume
+            Data Analytics & EDA
           </h2>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <p class="text-xs text-slate-400 uppercase tracking-wider">Total Tickets</p>
-              <p id="stat-total-tickets" class="text-3xl font-bold text-white mt-1">—</p>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Total Records (EDA)</p>
+              <p id="stat-eda-records" class="text-3xl font-bold text-white mt-1">—</p>
             </div>
             <div>
-              <p class="text-xs text-slate-400 uppercase tracking-wider">Escalation Rate</p>
-              <p id="stat-escalation" class="text-3xl font-bold text-rose-400 mt-1">—</p>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Missing / Empty</p>
+              <p id="stat-eda-missing" class="text-3xl font-bold text-rose-400 mt-1">—</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Duplicates</p>
+              <p id="stat-eda-duplicates" class="text-lg font-bold text-slate-300 mt-0.5">—</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Avg Text Length</p>
+              <p id="stat-eda-length" class="text-lg font-bold text-slate-300 mt-0.5">—</p>
             </div>
           </div>
           <div class="mt-4 pt-4 border-t border-slate-700/50">
-            <p class="text-xs text-slate-400 mb-2">Category Distribution</p>
-            <div id="stat-categories" class="flex flex-wrap gap-2 text-xs">
-              <!-- Rendered via JS -->
+            <p class="text-xs text-slate-400 mb-2">Class / Category Distribution</p>
+            <div id="stat-eda-categories" class="flex flex-wrap gap-2 text-xs">
               <span class="text-slate-500">Loading...</span>
             </div>
           </div>
         </div>
 
-        <!-- Chat / Generative Stats -->
+        <!-- 3. AI Operations -->
         <div class="glass rounded-xl p-5 shadow-lg">
-          <h2 class="text-sm font-semibold text-indigo-300 mb-4 flex items-center gap-2">
+          <h2 class="text-sm font-semibold text-emerald-300 mb-4 flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            AI Engine Performance
+            AI Operations
           </h2>
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <p class="text-xs text-slate-400 uppercase tracking-wider">Avg Latency</p>
-              <p id="stat-latency" class="text-3xl font-bold text-white mt-1">—</p>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Avg LLM Latency</p>
+              <p id="stat-op-latency" class="text-3xl font-bold text-white mt-1">—</p>
             </div>
             <div>
               <p class="text-xs text-slate-400 uppercase tracking-wider">AI Authored</p>
-              <p id="stat-ai-ratio" class="text-3xl font-bold text-emerald-400 mt-1">—</p>
+              <p id="stat-op-airatio" class="text-3xl font-bold text-emerald-400 mt-1">—</p>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <p class="text-xs text-slate-400 uppercase tracking-wider">Active Sessions</p>
-              <p id="stat-sessions" class="text-lg font-bold text-white mt-0.5">—</p>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Escalation Rate</p>
+              <p id="stat-op-escalation" class="text-lg font-bold text-rose-400 mt-0.5">—</p>
             </div>
             <div>
-              <p class="text-xs text-slate-400 uppercase tracking-wider">Messages</p>
-              <p id="stat-messages" class="text-lg font-bold text-white mt-0.5">—</p>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Total API Req</p>
+              <p id="stat-op-requests" class="text-lg font-bold text-slate-300 mt-0.5">—</p>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-slate-700/50">
+            <p class="text-xs text-slate-400 mb-2">Live Session Stats</p>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-xs text-slate-400 uppercase tracking-wider">Chat Sessions</p>
+                <p id="stat-op-sessions" class="text-sm font-bold text-white mt-1">—</p>
+              </div>
+              <div>
+                <p class="text-xs text-slate-400 uppercase tracking-wider">Chat Messages</p>
+                <p id="stat-op-messages" class="text-sm font-bold text-white mt-1">—</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ML Metrics -->
+      <!-- 2. Model Analytics -->
       <div class="glass rounded-xl p-5 shadow-lg">
         <h2 class="text-sm font-semibold text-violet-300 mb-4 flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-          Classification Model Metrics
+          Model Analytics (Test Set Evaluation)
         </h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-2">
           <div>
-            <p class="text-xs text-slate-400 uppercase tracking-wider">Test Accuracy</p>
+            <p class="text-xs text-slate-400 uppercase tracking-wider">Accuracy</p>
             <p id="stat-ml-acc" class="text-2xl font-bold text-white mt-1">—</p>
           </div>
           <div>
@@ -280,12 +313,16 @@
             <p id="stat-ml-f1" class="text-2xl font-bold text-white mt-1">—</p>
           </div>
           <div>
-            <p class="text-xs text-slate-400 uppercase tracking-wider">Hold-out Set Size</p>
-            <p id="stat-ml-size" class="text-2xl font-bold text-slate-300 mt-1">—</p>
+            <p class="text-xs text-slate-400 uppercase tracking-wider">Precision (Avg)</p>
+            <p id="stat-ml-precision" class="text-2xl font-bold text-white mt-1">—</p>
           </div>
           <div>
-            <p class="text-xs text-slate-400 uppercase tracking-wider">Generated At</p>
-            <p id="stat-ml-date" class="text-sm font-medium text-slate-300 mt-2">—</p>
+            <p class="text-xs text-slate-400 uppercase tracking-wider">Recall (Avg)</p>
+            <p id="stat-ml-recall" class="text-2xl font-bold text-white mt-1">—</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400 uppercase tracking-wider">CV Score</p>
+            <p id="stat-ml-cv" class="text-lg font-medium text-slate-300 mt-2">—</p>
           </div>
         </div>
       </div>
@@ -557,44 +594,86 @@
 
     async function loadAnalytics() {
       try {
-        const [fullRes, metricsRes] = await Promise.all([
+        const [fullRes, edaRes, dqRes, insightsRes] = await Promise.all([
           fetch('/analytics'),
-          fetch('/metrics')
+          fetch('/analytics/eda'),
+          fetch('/analytics/data-quality'),
+          fetch('/analytics/insights')
         ]);
         
         if (fullRes.ok) {
           const data = await fullRes.json();
           const t = data.tickets;
-          const a = data.ai;
+          const a = data.session;
+          const ml = data.ml_evaluation;
 
-          $('stat-total-tickets').textContent = t.total_tickets;
-          $('stat-escalation').textContent = t.total_tickets > 0 ? Math.round((t.escalated_tickets / t.total_tickets)*100) + '%' : '0%';
+          // AI Operations
+          $('stat-op-latency').textContent = a.avg_latency_ms > 0 ? Math.round(a.avg_latency_ms) + 'ms' : '—';
+          $('stat-op-airatio').textContent = t.ai_replies.total > 0 ? Math.round((t.ai_replies.ai_generated / t.ai_replies.total)*100) + '%' : '0%';
+          $('stat-op-sessions').textContent = a.total_chat_sessions;
+          $('stat-op-messages').textContent = a.total_chat_messages;
+          $('stat-op-requests').textContent = a.total_requests;
           
-          let catHtml = '';
-          for (const [cat, count] of Object.entries(t.by_category)) {
-             catHtml += `<span class="bg-slate-800 border border-slate-700 px-2 py-1 rounded">${cat}: <strong>${count}</strong></span>`;
+          let escalationRate = 0;
+          if (t.total_tickets > 0 && a.total_escalations > 0) {
+              // Approximate since AI stats reset, but for demo:
+              escalationRate = Math.round((a.total_escalations / a.total_requests)*100);
           }
-          $('stat-categories').innerHTML = catHtml || '<span class="text-slate-500">No data</span>';
+          $('stat-op-escalation').textContent = escalationRate + '%';
 
-          $('stat-latency').textContent = a.avg_latency_ms > 0 ? Math.round(a.avg_latency_ms) + 'ms' : '—';
-          $('stat-ai-ratio').textContent = t.total_tickets > 0 ? Math.round((a.total_ai_replies / t.total_tickets)*100) + '%' : '0%';
-          $('stat-sessions').textContent = a.total_chat_sessions;
-          $('stat-messages').textContent = a.total_chat_messages;
-        }
-
-        if (metricsRes.ok) {
-          const ml = await metricsRes.json();
-          if (ml.status === 'ok') {
+          // Model Analytics
+          if (ml && ml.status === 'ok') {
             $('stat-ml-acc').textContent = (ml.test_accuracy * 100).toFixed(2) + '%';
             $('stat-ml-f1').textContent = (ml.macro_f1 * 100).toFixed(2) + '%';
-            $('stat-ml-size').textContent = ml.dataset_size_test || '—';
-            const date = new Date(ml.timestamp);
-            $('stat-ml-date').textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            // Calculate avg precision/recall from class_metrics
+            if (ml.class_metrics) {
+               let p_sum = 0, r_sum = 0, count = 0;
+               for (const [k, v] of Object.entries(ml.class_metrics)) {
+                  p_sum += v.precision; r_sum += v.recall; count++;
+               }
+               $('stat-ml-precision').textContent = ((p_sum/count) * 100).toFixed(1) + '%';
+               $('stat-ml-recall').textContent = ((r_sum/count) * 100).toFixed(1) + '%';
+            }
+            $('stat-ml-cv').textContent = ml.cv_accuracy_mean ? (ml.cv_accuracy_mean * 100).toFixed(1) + '%' : '—';
           }
         }
+
+        // Data Analytics & EDA
+        if (edaRes.ok && dqRes.ok) {
+          const eda = await edaRes.json();
+          const dq = await dqRes.json();
+
+          $('stat-eda-records').textContent = eda.total_records || '0';
+          $('stat-eda-missing').textContent = dq.missing_row_percent !== undefined ? dq.missing_row_percent + '%' : '—';
+          $('stat-eda-duplicates').textContent = dq.duplicate_percent !== undefined ? dq.duplicate_percent + '%' : '—';
+          $('stat-eda-length').textContent = eda.text_length ? eda.text_length.mean + ' chars' : '—';
+
+          let catHtml = '';
+          if (eda.category_distribution) {
+             for (const [cat, count] of Object.entries(eda.category_distribution)) {
+                catHtml += `<span class="bg-slate-800 border border-slate-700 px-2 py-1 rounded">${cat}: <strong>${count}</strong></span>`;
+             }
+          }
+          $('stat-eda-categories').innerHTML = catHtml || '<span class="text-slate-500">No data</span>';
+        }
+
+        // Automated Insights
+        if (insightsRes.ok) {
+          const ins = await insightsRes.json();
+          if (ins.insights && ins.insights.length > 0) {
+            $('automated-insights-banner').classList.remove('hidden');
+            let listHtml = '';
+            ins.insights.forEach(item => {
+              listHtml += `<li>${item}</li>`;
+            });
+            $('automated-insights-list').innerHTML = listHtml;
+          }
+        }
+
         analyticsLoaded = true;
       } catch (e) {
-        showError("Failed to load analytics");
+        showError("Failed to load full analytics suite: " + e.message);
       }
     }
   </script>
