@@ -5,6 +5,7 @@ from collections import Counter
 
 logger = logging.getLogger(__name__)
 
+
 def evaluate_data_quality(csv_path: str = "data/tickets.csv") -> dict:
     """
     Evaluate dataset quality and return percentage-based health metrics.
@@ -29,15 +30,13 @@ def evaluate_data_quality(csv_path: str = "data/tickets.csv") -> dict:
             is_missing = not text or not category
             if is_missing:
                 missing_values += 1
-            
-            is_duplicate = False
+
             if text:
                 if text in seen_texts:
                     duplicates += 1
-                    is_duplicate = True
                 else:
                     seen_texts.add(text)
-            
+
             if category and not is_missing:
                 categories.append(category)
 

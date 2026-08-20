@@ -8,6 +8,7 @@ from app.ml.urgency import score_urgency
 
 logger = logging.getLogger(__name__)
 
+
 def generate_eda_report(csv_path: str = "data/tickets.csv") -> dict:
     """
     Generate Exploratory Data Analysis (EDA) metrics from the raw dataset.
@@ -35,15 +36,15 @@ def generate_eda_report(csv_path: str = "data/tickets.csv") -> dict:
 
             if not text or not category:
                 missing_values += 1
-            
+
             if text in seen_texts:
                 duplicates += 1
             else:
                 seen_texts.add(text)
-            
+
             if category:
                 categories.append(category)
-            
+
             if text:
                 text_lengths.append(len(text))
                 # Heuristic feature distribution
@@ -55,7 +56,7 @@ def generate_eda_report(csv_path: str = "data/tickets.csv") -> dict:
 
     # Calculations
     category_counts = dict(Counter(categories))
-    
+
     # Class balance ratio (min / max category count)
     class_counts = list(category_counts.values())
     if class_counts:

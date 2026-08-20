@@ -1,6 +1,7 @@
 from .eda import generate_eda_report
 from .data_quality import evaluate_data_quality
 
+
 def generate_automated_insights() -> dict:
     """
     Generate automated plain-text insights from the EDA and data quality metrics.
@@ -24,12 +25,12 @@ def generate_automated_insights() -> dict:
     # Data quality insights
     missing_pct = quality.get("missing_row_percent", 0)
     duplicate_pct = quality.get("duplicate_percent", 0)
-    
+
     if missing_pct > 0:
         insights.append(f"Data Quality Warning: {missing_pct}% of records have missing values.")
     else:
         insights.append("Excellent Data Quality: 0% missing values detected in the dataset.")
-        
+
     if duplicate_pct > 0:
         insights.append(f"Data Quality Warning: {duplicate_pct}% of records are exact text duplicates.")
 
