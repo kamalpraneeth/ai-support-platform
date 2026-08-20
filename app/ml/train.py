@@ -52,11 +52,7 @@ def train_and_save() -> None:
     print(f"[1/4] Loading and validating data from {DATA_PATH} ...")
     texts, labels = get_clean_texts_and_labels(DATA_PATH)
     n_classes = len(set(labels))
-    print(
-        f"      {
-            len(texts)} clean samples | {n_classes} classes: {
-            sorted(
-                set(labels))}")
+    print(f"      {len(texts)} clean samples | {n_classes} classes: {sorted(set(labels))}")
 
     # --- Evaluation on train/test split ---
     print("[2/4] Evaluating model (80/20 stratified split + 5-fold CV) ...")

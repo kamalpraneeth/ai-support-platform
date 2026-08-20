@@ -131,8 +131,7 @@ def validate_record(
             ValidationError(
                 row_index,
                 "category",
-                f"Invalid category '{category}'. Expected one of: {
-                    sorted(VALID_CATEGORIES)}",
+                f"Invalid category '{category}'. Expected one of: {sorted(VALID_CATEGORIES)}",
             )
         )
         ok = False
@@ -142,8 +141,7 @@ def validate_record(
             ValidationError(
                 row_index,
                 "text",
-                f"Text too short ({
-                    len(text)} chars)"))
+                f"Text too short ({len(text)} chars)"))
         ok = False
 
     return ok

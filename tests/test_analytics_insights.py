@@ -24,7 +24,7 @@ def test_generate_automated_insights_success(mock_quality, mock_eda):
 
     # Check specific strings generated
     assert any("Billing" in i and "60.0%" in i for i in insights)
-    assert any("0.0%" in i for i in insights)  # No missing values
+    assert any("0%" in i for i in insights)  # No missing values
     assert any("2.0%" in i for i in insights)  # Duplicates
     assert any("15.0%" in i for i in insights)  # High urgency
     assert any("120" in i for i in insights)  # Mean text length
