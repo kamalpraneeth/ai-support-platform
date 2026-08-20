@@ -18,6 +18,7 @@ ultralytics==8.3.0
 Pillow==10.4.0
 transformers
 peft
-torch
+torch==2.2.2+cpu
+torchvision==0.17.2+cpu
 datasets
 easyocr
