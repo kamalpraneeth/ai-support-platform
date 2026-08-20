@@ -73,7 +73,7 @@ The project includes a comprehensive, deterministic test suite covering the enti
 ```bash
 pytest tests/ -v
 ```
-**Current Test Coverage**: 199 total tests (`198 passed, 1 skipped` due to missing API keys in CI).
+**Current Test Coverage**: 199 tests passed, 0 skipped. External Groq integration tests are executed separately using the `@pytest.mark.integration` marker.
 
 ## 🏗️ End-to-End GenAI Data & ML Pipeline
 

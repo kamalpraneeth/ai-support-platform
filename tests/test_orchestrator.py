@@ -235,7 +235,8 @@ class TestOrchestratorSuccess:
         assert result.is_ai_generated is False
         assert result.attempts == 1
         assert len(result.reply) > 20
-        assert "fallback" not in result.reply.lower()  # ensure it uses actual fallback template
+        # ensure it uses actual fallback template
+        assert "fallback" not in result.reply.lower()
 
     def test_low_ml_confidence_escalation(self, test_retriever, mock_llm_success):
         result = orchestrate(
@@ -263,3 +264,26 @@ class TestOrchestratorSuccess:
         assert result.attempts == 2
         assert result.is_ai_generated is True
         assert result.reply == "Thank you for contacting support regarding your account number query. This is a very safe and sufficiently long reply to pass the evaluation checks."
+
+    def test_orchestrator_max_retries_exceeded_uses_fallback(self, test_retriever, mock_llm_unsafe, monkeypatch):
+        """If it keeps generating unsafe content, it should eventually give up and use fallback."""
+        def always_unsafe(messages):
+            return "Your account number is 123456789.", 100.0, True
+
+        import app.ai_orchestrator
+        monkeypatch.setattr(app.ai_orchestrator, "_call_llm", always_unsafe)
+
+        result = orchestrate(
+            ticket_text="What is my account number?",
+            category="Account",
+            confidence=0.9,
+            urgency="High",
+            sentiment="Neutral",
+            retriever=test_retriever,
+        )
+
+        assert result.is_ai_generated is False
+        # 1 initial + 1 retry (MAX_REGENERATION_ATTEMPTS)
+        assert result.attempts == 2
+        # ensure it uses the fallback template string
+        assert "fallback" not in result.reply.lower()
