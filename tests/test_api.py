@@ -8,6 +8,7 @@ conftest.py. That fixture:
   - Never touches the production support.db file
 """
 
+import pytest
 import os
 
 
@@ -141,7 +142,29 @@ class TestSubmitTicketEndpoint:
 
 # ── POST /ticket/reply Tests ────────────────────────────────────────────
 
+
 class TestTicketReplyEndpoint:
+    @pytest.fixture(autouse=True)
+    def set_dummy_api_key_and_mock(self, monkeypatch):
+        """Mock the LLM call for all reply tests (except when explicitly testing fallback)."""
+        original = os.environ.get("GROQ_API_KEY")
+        os.environ["GROQ_API_KEY"] = "mock_key_for_testing"
+
+        def fake_call_llm(messages):
+            if not os.environ.get("GROQ_API_KEY"):
+                return "", 0.0, False
+            # Make the reply long enough to pass evaluation (minimum 15 words)
+            return "Thank you for contacting support regarding your pricing plans question. This is a sufficiently long mocked LLM reply.", 150.0, True
+
+        import app.ai_orchestrator
+        monkeypatch.setattr(app.ai_orchestrator, "_call_llm", fake_call_llm)
+
+        yield
+        if original is not None:
+            os.environ["GROQ_API_KEY"] = original
+        else:
+            os.environ.pop("GROQ_API_KEY", None)
+
     def test_reply_returns_200_for_existing_ticket(self, client):
         """POST /ticket/reply with valid ticket_id returns HTTP 200."""
         ticket_res = submit_ticket(
@@ -172,6 +195,7 @@ class TestTicketReplyEndpoint:
         data = res.json()
         assert "is_ai_generated" in data
         assert isinstance(data["is_ai_generated"], bool)
+        assert data["is_ai_generated"] is True  # because it's using the mocked happy path
 
     def test_reply_for_nonexistent_ticket_returns_404(self, client):
         """POST /ticket/reply with a bogus ticket ID should return 404."""

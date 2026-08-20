@@ -73,7 +73,7 @@ The project includes a comprehensive, deterministic test suite covering the enti
 ```bash
 pytest tests/ -v
 ```
-**Current Test Coverage**: 194 total tests (`192 passed, 2 skipped` due to missing API keys in CI).
+**Current Test Coverage**: 199 total tests (`198 passed, 1 skipped` due to missing API keys in CI).
 
 ## 🏗️ End-to-End GenAI Data & ML Pipeline
 

@@ -156,3 +156,110 @@ class TestOrchestratorFallback:
         assert "reply" in d
         assert "is_ai_generated" in d
         assert "escalated" in d
+
+
+# ---------------------------------------------------------------------------
+# Orchestrator tests (Mocked API key — tests happy path)
+# ---------------------------------------------------------------------------
+
+class TestOrchestratorSuccess:
+    """Tests that verify the orchestrator works correctly with a mocked LLM."""
+
+    @pytest.fixture(autouse=True)
+    def set_dummy_api_key(self):
+        """Ensure GROQ_API_KEY is set for these tests so _call_llm doesn't abort."""
+        original = os.environ.get("GROQ_API_KEY")
+        os.environ["GROQ_API_KEY"] = "mock_key_for_testing"
+        yield
+        if original is not None:
+            os.environ["GROQ_API_KEY"] = original
+        else:
+            os.environ.pop("GROQ_API_KEY", None)
+
+    @pytest.fixture
+    def mock_llm_success(self, monkeypatch):
+        """Mock _call_llm to return a successful deterministic response."""
+        def fake_call_llm(messages):
+            # Must be >15 words and contain terms from ticket to pass evaluation
+            return "Thank you for contacting support regarding your broken screen. Please follow the recommended troubleshooting steps to diagnose the problem. If the issue continues, our support team can assist you further to resolve it quickly.", 123.4, True
+
+        import app.ai_orchestrator
+        monkeypatch.setattr(app.ai_orchestrator, "_call_llm", fake_call_llm)
+
+    @pytest.fixture
+    def mock_llm_failure(self, monkeypatch):
+        """Mock _call_llm to simulate an API failure."""
+        def fake_call_llm(messages):
+            return "", 0.0, False
+
+        import app.ai_orchestrator
+        monkeypatch.setattr(app.ai_orchestrator, "_call_llm", fake_call_llm)
+
+    @pytest.fixture
+    def mock_llm_unsafe(self, monkeypatch):
+        """Mock _call_llm to return hallucinated/unsafe content to trigger regeneration."""
+        call_count = [0]
+
+        def fake_call_llm(messages):
+            call_count[0] += 1
+            if call_count[0] == 1:
+                return "Your account number is 123456789.", 100.0, True
+            return "Thank you for contacting support regarding your account number query. This is a very safe and sufficiently long reply to pass the evaluation checks.", 100.0, True
+
+        import app.ai_orchestrator
+        monkeypatch.setattr(app.ai_orchestrator, "_call_llm", fake_call_llm)
+
+    def test_successful_groq_response(self, test_retriever, mock_llm_success):
+        result = orchestrate(
+            ticket_text="My screen is broken",
+            category="Technical",
+            confidence=0.9,
+            urgency="High",
+            sentiment="Negative",
+            retriever=test_retriever,
+        )
+        assert result.is_ai_generated is True
+        assert result.reply == "Thank you for contacting support regarding your broken screen. Please follow the recommended troubleshooting steps to diagnose the problem. If the issue continues, our support team can assist you further to resolve it quickly."
+        assert result.attempts == 1
+        assert result.llm_latency_ms == 123.4
+
+    def test_groq_api_failure_uses_fallback(self, test_retriever, mock_llm_failure):
+        result = orchestrate(
+            ticket_text="I need help with my bill",
+            category="Billing",
+            confidence=0.8,
+            urgency="Low",
+            sentiment="Neutral",
+            retriever=test_retriever,
+        )
+        assert result.is_ai_generated is False
+        assert result.attempts == 1
+        assert len(result.reply) > 20
+        assert "fallback" not in result.reply.lower()  # ensure it uses actual fallback template
+
+    def test_low_ml_confidence_escalation(self, test_retriever, mock_llm_success):
+        result = orchestrate(
+            ticket_text="I am not sure what is wrong",
+            category="General",
+            confidence=0.2,  # Low confidence
+            urgency="Low",
+            sentiment="Neutral",
+            retriever=test_retriever,
+        )
+        assert result.escalated is True
+        assert result.is_ai_generated is True
+        assert "Low classifier confidence" in result.escalation_reason
+
+    def test_unsafe_llm_output_triggers_regeneration(self, test_retriever, mock_llm_unsafe):
+        result = orchestrate(
+            ticket_text="What is my account number?",
+            category="Account",
+            confidence=0.9,
+            urgency="High",
+            sentiment="Neutral",
+            retriever=test_retriever,
+        )
+        # It should retry once and get the safe reply on attempt 2
+        assert result.attempts == 2
+        assert result.is_ai_generated is True
+        assert result.reply == "Thank you for contacting support regarding your account number query. This is a very safe and sufficiently long reply to pass the evaluation checks."
