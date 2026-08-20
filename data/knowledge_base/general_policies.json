@@ -1,0 +1,51 @@
+[
+  {
+    "id": "general_001",
+    "title": "Getting Started with the Platform",
+    "content": "Welcome to our platform. To get started: (1) Create an account at app.platform.com/signup. (2) Verify your email address. (3) Complete your profile setup. (4) Follow the onboarding wizard to configure your workspace. (5) Invite team members from Account Settings > Team > Invite. (6) Explore our getting started guide at docs.platform.com/quickstart. Our support team is available Monday-Friday 9am-6pm UTC. For urgent issues outside business hours, use the priority support option.",
+    "category": "General",
+    "tags": ["getting started", "onboarding", "setup", "new user"]
+  },
+  {
+    "id": "general_002",
+    "title": "Platform Features and Plans",
+    "content": "Our platform offers three tiers. Basic (free): core features, 5 users, 1GB storage, community support. Professional: all features, unlimited users, 100GB storage, priority email support, API access. Enterprise: custom features, unlimited storage, dedicated support, SLA guarantee, custom integrations, SSO. All paid plans include: real-time collaboration, advanced analytics, export capabilities, and integrations with 50+ third-party tools. Contact sales@platform.com for Enterprise pricing.",
+    "category": "General",
+    "tags": ["features", "plans", "pricing", "enterprise", "professional"]
+  },
+  {
+    "id": "general_003",
+    "title": "Data Privacy and Security",
+    "content": "We take data privacy seriously. Your data is encrypted at rest (AES-256) and in transit (TLS 1.3). We do not sell your data to third parties. Data is stored in EU and US data centers with geographic redundancy. We comply with GDPR, CCPA, and SOC 2 Type II standards. You can request a copy of your data or deletion at any time from Account Settings > Privacy. For DPA (Data Processing Agreement) requests, contact legal@platform.com.",
+    "category": "General",
+    "tags": ["privacy", "security", "gdpr", "data", "compliance"]
+  },
+  {
+    "id": "general_004",
+    "title": "Contacting Sales and Enterprise",
+    "content": "For Enterprise pricing, custom integrations, or volume licensing, contact our sales team at sales@platform.com or schedule a demo at platform.com/demo. Our sales team responds within 1 business day. For non-profit and educational institution discounts, provide documentation of your status. We offer 20% discounts for verified non-profits and 30% for educational institutions. Custom contract terms are available for enterprise customers.",
+    "category": "General",
+    "tags": ["sales", "enterprise", "demo", "nonprofit", "pricing"]
+  },
+  {
+    "id": "general_005",
+    "title": "Integrations and Third-Party Tools",
+    "content": "We integrate with 50+ tools including: Slack, Microsoft Teams, Google Workspace, Salesforce, HubSpot, Zapier, GitHub, Jira, Trello, Asana, Zoom, and more. Integrations are configured from Settings > Integrations. Each integration has a dedicated setup guide in our documentation at docs.platform.com/integrations. Custom integrations are available via our REST API for Professional and Enterprise plans. Webhook support is available for real-time event notification.",
+    "category": "General",
+    "tags": ["integrations", "third-party", "api", "webhooks", "tools"]
+  },
+  {
+    "id": "general_006",
+    "title": "Support Availability and Response Times",
+    "content": "Support availability by plan: Basic — community forum and documentation only. Professional — email support, response within 24 hours on business days. Enterprise — priority email + phone support, response within 4 hours, 24/7 for critical issues. All plans have access to our documentation at docs.platform.com and community forum at community.platform.com. Status page for service incidents: status.platform.com. Emergency contact for Enterprise customers: emergency@platform.com.",
+    "category": "General",
+    "tags": ["support", "response time", "availability", "sla", "contact"]
+  },
+  {
+    "id": "general_007",
+    "title": "Feature Requests and Product Feedback",
+    "content": "We actively consider feature requests from our users. To submit a feature request: (1) Visit our feedback portal at feedback.platform.com. (2) Search to see if your request already exists. (3) Vote on existing requests or create a new one. (4) Our product team reviews all requests monthly. Highly-voted features are added to our roadmap. You can view our public roadmap at roadmap.platform.com. For urgent Enterprise feature needs, contact your account manager.",
+    "category": "General",
+    "tags": ["feature request", "feedback", "roadmap", "product", "improvement"]
+  }
+]

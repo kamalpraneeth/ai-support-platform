@@ -105,6 +105,32 @@ class TestSubmitTicketEndpoint:
         res2 = submit_ticket(client, "Second ticket about technical problem with the app")
         assert res2.json()["id"] > res1.json()["id"]
 
+    def test_submit_with_image_valid(self, client):
+        """POST /ticket/with-image works with a valid image"""
+        import io
+        from PIL import Image
+        
+        img = Image.new('RGB', (10, 10), color='red')
+        img_bytes = io.BytesIO()
+        img.save(img_bytes, format='PNG')
+        
+        files = {"image": ("test.png", img_bytes.getvalue(), "image/png")}
+        data = {"text": "My screen is broken as you can see in the picture."}
+        
+        res = client.post("/ticket/with-image", data=data, files=files)
+        assert res.status_code == 200
+        assert "id" in res.json()
+        assert res.json()["category"] == "Technical"
+
+    def test_submit_with_image_invalid_mime(self, client):
+        """POST /ticket/with-image rejects invalid mime types"""
+        files = {"image": ("test.pdf", b"fake pdf data", "application/pdf")}
+        data = {"text": "Here is a PDF of my problem."}
+        
+        res = client.post("/ticket/with-image", data=data, files=files)
+        assert res.status_code == 400
+        assert "Unsupported media type" in res.json()["detail"]
+
 
 # ── POST /ticket/reply Tests ──────────────────────────────────────────────────
 

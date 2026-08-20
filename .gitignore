@@ -21,3 +21,14 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Generated reports (contain computed metrics, not secrets)
+models/data_quality_report.json
+models/evaluation_report.json
+
+# Test artifacts
+test_support.db
+
+# Scratch files
+fix_test_header.py
+*.log

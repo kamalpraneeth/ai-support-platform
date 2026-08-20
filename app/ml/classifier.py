@@ -1,8 +1,14 @@
 """
 ML Classifier: TF-IDF + Logistic Regression for ticket category prediction.
 
-Trained on data/tickets.csv (80 labeled samples across 4 categories).
+Trained on data/tickets.csv (~200 labeled samples across 4 categories).
 Model is serialized to models/classifier.pkl after training.
+
+Key functions:
+  load_model()               — load the trained pipeline from disk
+  predict_category()         — predict category label only
+  predict_with_confidence()  — predict category + probability score (uses predict_proba)
+  build_pipeline()           — construct a fresh TF-IDF + LR pipeline
 """
 
 import os
@@ -46,6 +52,32 @@ def predict_category(text: str, model: Pipeline | None = None) -> str:
         model = load_model()
     prediction = model.predict([text])[0]
     return prediction
+
+
+def predict_with_confidence(text: str, model: Pipeline | None = None) -> tuple[str, float]:
+    """
+    Predict category and return the classifier's confidence score.
+
+    The confidence score is the maximum class probability from
+    LogisticRegression.predict_proba(). Logistic regression outputs
+    calibrated probabilities, so a score of 0.9 means the model assigns
+    ~90% probability to the predicted class.
+
+    Args:
+        text: Raw ticket text.
+        model: Optional pre-loaded pipeline.
+
+    Returns:
+        (category, confidence) where confidence is in [0.0, 1.0].
+        A confidence below 0.5 indicates an ambiguous / borderline ticket.
+    """
+    if model is None:
+        model = load_model()
+    proba = model.predict_proba([text])[0]  # shape: (n_classes,)
+    max_idx = int(proba.argmax())
+    confidence = float(proba[max_idx])
+    category = model.classes_[max_idx]
+    return str(category), round(confidence, 4)
 
 
 def build_pipeline() -> Pipeline:

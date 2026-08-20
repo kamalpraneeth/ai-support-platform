@@ -1,0 +1,51 @@
+[
+  {
+    "id": "tech_001",
+    "title": "Application Crashing or Not Loading",
+    "content": "If the application crashes or fails to load, try these steps in order: (1) Clear your browser cache and cookies. (2) Try a different browser (Chrome, Firefox, Edge). (3) Disable browser extensions, which can interfere with web applications. (4) Check your internet connection. (5) Try incognito or private browsing mode. (6) If using the mobile app, force-close and reopen it. (7) If the issue persists, collect the error message or screenshot and submit a ticket with your browser version and operating system.",
+    "category": "Technical",
+    "tags": ["crash", "loading", "browser", "app", "error"]
+  },
+  {
+    "id": "tech_002",
+    "title": "API Integration and Error Codes",
+    "content": "Common API errors and solutions: 400 Bad Request — check request payload format against the API documentation. 401 Unauthorized — verify your API key is valid and included in the Authorization header. 403 Forbidden — your account plan may not include API access or you have exceeded your rate limit. 404 Not Found — verify the endpoint URL. 429 Too Many Requests — you have hit the rate limit; implement exponential backoff and retry. 500 Internal Server Error — this is a server-side issue; retry after a few minutes and contact support if it persists.",
+    "category": "Technical",
+    "tags": ["api", "error", "integration", "rate limit", "http"]
+  },
+  {
+    "id": "tech_003",
+    "title": "Data Not Syncing Across Devices",
+    "content": "If your data is not syncing across devices: (1) Ensure all devices are connected to the internet. (2) Log out and log back in on the affected device. (3) Check that you are logged in with the same account on all devices. (4) On mobile, ensure background app refresh is enabled. (5) Force sync by going to Settings > Sync > Sync Now. (6) If using offline mode, sync requires an active connection. (7) If sync has been offline for more than 48 hours, some changes may need to be manually reconciled.",
+    "category": "Technical",
+    "tags": ["sync", "devices", "data", "offline", "mobile"]
+  },
+  {
+    "id": "tech_004",
+    "title": "File Upload Issues",
+    "content": "Supported file types include: PDF, DOCX, XLSX, CSV, PNG, JPG, and ZIP. Maximum file size is 50MB per file (Enterprise: 500MB). If your upload fails: (1) Check the file type is supported. (2) Check the file size does not exceed the limit. (3) Ensure your browser is up to date. (4) Try uploading via a different network (some corporate firewalls block large uploads). (5) If the file appears corrupted after upload, try re-uploading after clearing your cache.",
+    "category": "Technical",
+    "tags": ["upload", "file", "size", "error", "format"]
+  },
+  {
+    "id": "tech_005",
+    "title": "Two-Factor Authentication Code Not Received",
+    "content": "If you are not receiving your two-factor authentication code: (1) Check that your registered phone number is correct in Account Settings > Security. (2) SMS codes can take up to 2 minutes to arrive. (3) Check if your carrier is blocking automated messages. (4) Switch to an authenticator app (Google Authenticator, Authy) for more reliable 2FA. (5) Use a backup code if you stored them during setup. (6) Contact support for account recovery if you have no access to any 2FA method.",
+    "category": "Technical",
+    "tags": ["2fa", "sms", "authentication", "code", "login"]
+  },
+  {
+    "id": "tech_006",
+    "title": "Performance Issues and Slow Loading",
+    "content": "If the platform is slow: (1) Check your internet connection speed. (2) Close unused browser tabs and applications. (3) Clear your browser cache. (4) Check our status page at status.platform.com for any ongoing incidents. (5) Disable browser extensions that may consume resources. (6) If loading specific pages is slow, include the page URL and your approximate location in your support ticket, as performance may vary by region.",
+    "category": "Technical",
+    "tags": ["slow", "performance", "loading", "speed", "lag"]
+  },
+  {
+    "id": "tech_007",
+    "title": "Notification Issues",
+    "content": "If you are not receiving notifications: (1) Check your notification preferences in Account Settings > Notifications. (2) Ensure browser notifications are allowed for this site in your browser settings. (3) On mobile, check that notifications are enabled for the app in your device settings. (4) Check your spam folder for email notifications. (5) Verify your email address is correct in your profile. (6) If using a work email, corporate filters may be blocking notification emails — add our sending domain to your allowlist.",
+    "category": "Technical",
+    "tags": ["notifications", "email", "mobile", "browser", "alerts"]
+  }
+]

@@ -19,6 +19,21 @@ text,category
 "My free trial ended but I was still charged",Billing
 "I need to dispute a charge on my account",Billing
 "The promo code I entered is not working at checkout",Billing
+"My payment method was declined but I still got charged",Billing
+"I upgraded my plan but was still billed at the old rate",Billing
+"I cancelled my account months ago but keep getting billed",Billing
+"There is a duplicate transaction on my bank statement",Billing
+"I was charged an annual fee I never agreed to",Billing
+"The invoice I received does not match the quoted price",Billing
+"I need a tax receipt for my business expense claim",Billing
+"My bank shows two charges from you in the same day",Billing
+"I want to switch to monthly billing from annual",Billing
+"The subscription auto-renewed without notifying me",Billing
+"My coupon code expired but I only got it today",Billing
+"I paid for premium but my account still shows basic",Billing
+"I need to update the credit card on file for auto-pay",Billing
+"I was charged during a service outage and want a credit",Billing
+"How do I get an invoice in a different currency?",Billing
 "The application keeps crashing whenever I try to upload a file",Technical
 "I am getting a 500 internal server error on your website",Technical
 "The login page is broken and I cannot sign in",Technical
@@ -39,6 +54,22 @@ text,category
 "The email integration is not syncing my inbox correctly",Technical
 "The app is very slow and takes minutes to load",Technical
 "I am getting a SSL certificate error on your website",Technical
+"The dark mode toggle is not saving my preference",Technical
+"My CSV export contains scrambled or incorrect data",Technical
+"The calendar integration stopped syncing after the update",Technical
+"I keep getting logged out unexpectedly during my session",Technical
+"The mobile push notifications stopped arriving this week",Technical
+"My webhook endpoint is not receiving any events",Technical
+"The filter on the reports page returns zero results always",Technical
+"I cannot print any documents from the web application",Technical
+"The image uploads fail silently with no error message",Technical
+"My data dashboard stopped refreshing automatically",Technical
+"The OAuth login with Google is not working",Technical
+"I cannot connect to the application using my VPN",Technical
+"The desktop application crashes when I switch workspaces",Technical
+"The in-app chat feature is showing blank messages",Technical
+"My API rate limit is being hit even for light usage",Technical
+"The bulk import tool fails midway with no error detail",Technical
 "I cannot log into my account even though my password is correct",Account
 "My account was suspended without any prior warning",Account
 "I want to delete my account and all associated data",Account
@@ -59,6 +90,20 @@ text,category
 "I need to set up single sign-on for my company account",Account
 "I cannot close or archive my old account",Account
 "How do I downgrade my account to the free plan?",Account
+"My linked social account was disconnected unexpectedly",Account
+"I am unable to update my phone number in profile settings",Account
+"My account shows activity from a location I do not recognize",Account
+"I need to reactivate a previously deactivated account",Account
+"How do I change the language setting on my account?",Account
+"I lost access to my authenticator app and cannot log in",Account
+"My account name is showing incorrectly to other users",Account
+"I need to remove a team member from my organization account",Account
+"My backup email address is no longer valid and I need to change it",Account
+"The account verification email never arrived in my inbox",Account
+"I need to update my billing address on the account",Account
+"How do I opt out of marketing emails from my account settings?",Account
+"My account was merged with another without my consent",Account
+"I need to export a full audit log of my account activity",Account
 "What are the differences between your pricing plans?",General
 "How do I get started with your platform?",General
 "Where can I find the documentation for your product?",General
@@ -79,3 +124,17 @@ text,category
 "Are there any tutorials or onboarding resources available?",General
 "What kind of support is included with the basic plan?",General
 "I am looking for a solution for my small business",General
+"How long does it take to set up the platform for a new team?",General
+"Do you offer any nonprofit or educational discounts?",General
+"What is your service level agreement for uptime?",General
+"Can your platform handle more than one thousand concurrent users?",General
+"Is there a community forum or user group I can join?",General
+"How do I migrate data from a competitor platform?",General
+"Do you have a mobile application available for download?",General
+"What security certifications does your platform hold?",General
+"Can I schedule a live demo with your sales team?",General
+"Do you offer a partner or reseller program?",General
+"How do I add custom branding to the platform interface?",General
+"What is the process for submitting a feature enhancement request?",General
+"Does your platform comply with GDPR requirements?",General
+"How do I access your developer API documentation?",General

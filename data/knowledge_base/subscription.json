@@ -1,0 +1,23 @@
+[
+  {
+    "id": "subscription_001",
+    "title": "Upgrading Your Subscription Plan",
+    "content": "To upgrade your plan, go to Account Settings > Subscription > Change Plan. Select the new plan and confirm. Upgrades take effect immediately. You will be charged a prorated amount for the remainder of the current billing period. For example, if you upgrade halfway through the month, you pay half the difference between the plans for that month. Your new features are available immediately after upgrade. Annual plan holders upgrading will receive a prorated credit.",
+    "category": "Billing",
+    "tags": ["upgrade", "subscription", "plan", "billing", "prorate"]
+  },
+  {
+    "id": "subscription_002",
+    "title": "Downgrading Your Subscription",
+    "content": "To downgrade, go to Account Settings > Subscription > Change Plan and select a lower tier. Downgrades take effect at the end of the current billing period — you retain full access until then. If your current usage exceeds the limits of the lower tier (e.g., more users than allowed), you will need to remove excess users before the downgrade takes effect. No refund is issued for the remaining days on the higher plan. You will receive a reminder email 7 days before the downgrade becomes active.",
+    "category": "Billing",
+    "tags": ["downgrade", "subscription", "plan", "billing", "access"]
+  },
+  {
+    "id": "subscription_003",
+    "title": "Free Trial Information",
+    "content": "Our Professional plan includes a 14-day free trial with no credit card required. The trial includes all Professional features including API access, priority support, and unlimited users. At the end of the trial, your account automatically reverts to the Basic (free) plan — you will not be charged without entering payment details. To convert your trial to a paid plan, go to Account Settings > Subscription before the trial expires. Trial data and settings are preserved when you convert.",
+    "category": "Billing",
+    "tags": ["trial", "free", "subscription", "14 days", "professional"]
+  }
+]

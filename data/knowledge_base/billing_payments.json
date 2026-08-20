@@ -1,0 +1,51 @@
+[
+  {
+    "id": "billing_001",
+    "title": "How to Request a Refund",
+    "content": "To request a refund, please contact our billing team within 30 days of the charge. Refunds are processed within 5-7 business days and returned to the original payment method. To initiate a refund, provide your account email, the invoice number, and a brief description of the reason. Refunds for annual subscriptions are prorated based on unused months.",
+    "category": "Billing",
+    "tags": ["refund", "billing", "payment", "charge"]
+  },
+  {
+    "id": "billing_002",
+    "title": "Understanding Your Invoice",
+    "content": "Your monthly invoice includes the base subscription fee, any add-ons or overage charges, applicable taxes, and any applied discounts or credits. Invoices are generated on your billing cycle date and sent to your registered email. You can download past invoices from Account Settings > Billing > Invoice History. If you believe an invoice is incorrect, please contact billing support within 14 days.",
+    "category": "Billing",
+    "tags": ["invoice", "billing", "charges", "receipt"]
+  },
+  {
+    "id": "billing_003",
+    "title": "Updating Payment Method",
+    "content": "To update your payment method, go to Account Settings > Billing > Payment Methods. You can add a new credit card, debit card, or link a PayPal account. The new payment method will be used for all future charges. If your current payment method fails, we will retry the charge up to three times over 5 days before suspending access. You will receive email notifications for each failed attempt.",
+    "category": "Billing",
+    "tags": ["payment", "credit card", "billing", "update"]
+  },
+  {
+    "id": "billing_004",
+    "title": "Subscription Plans and Pricing",
+    "content": "We offer three subscription tiers: Basic (free, limited features), Professional (monthly or annual), and Enterprise (custom pricing). Annual subscriptions receive a 20% discount compared to monthly billing. You can upgrade or downgrade your plan at any time from Account Settings > Subscription. Downgrades take effect at the end of the current billing period. Upgrades take effect immediately with prorated billing.",
+    "category": "Billing",
+    "tags": ["pricing", "plan", "subscription", "upgrade", "downgrade"]
+  },
+  {
+    "id": "billing_005",
+    "title": "Unauthorized Charges and Dispute Process",
+    "content": "If you notice an unauthorized charge on your account, contact us immediately at billing@support.com or through this ticket system. Our team will investigate the charge within 2 business days. If confirmed unauthorized, we will issue a full refund and secure your account. You may also dispute the charge directly with your bank or credit card issuer. Please do not dispute with your bank before contacting us, as it may delay resolution.",
+    "category": "Billing",
+    "tags": ["unauthorized", "dispute", "fraud", "charge", "security"]
+  },
+  {
+    "id": "billing_006",
+    "title": "Cancellation and Subscription Termination",
+    "content": "You can cancel your subscription at any time from Account Settings > Subscription > Cancel Plan. Your access continues until the end of the current paid period. We do not offer partial refunds for unused time on monthly plans. For annual plans, refunds are calculated on remaining full months. After cancellation, your data is retained for 90 days, after which it is permanently deleted. You can reactivate your account within this window.",
+    "category": "Billing",
+    "tags": ["cancel", "cancellation", "subscription", "terminate", "refund"]
+  },
+  {
+    "id": "billing_007",
+    "title": "Promo Codes and Discount Application",
+    "content": "Promo codes can be applied at checkout or in Account Settings > Billing > Apply Coupon. Each code is single-use per account. Codes cannot be combined with other offers unless explicitly stated. If your code is not working, check the expiry date, ensure it is entered without spaces, and confirm it applies to your current plan. Contact support if the code appears valid but still fails.",
+    "category": "Billing",
+    "tags": ["promo", "coupon", "discount", "code", "billing"]
+  }
+]

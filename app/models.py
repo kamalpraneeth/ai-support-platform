@@ -1,14 +1,17 @@
 """
 SQLAlchemy ORM model for the Ticket table.
 
-One table keeps this simple and interview-friendly.
-All predictions (category, urgency, sentiment) are stored alongside the
-raw ticket text so you can inspect the DB with `sqlite3 support.db`.
+Columns added in v2.0.0 upgrade:
+  - ml_confidence    — classifier confidence score (predict_proba max)
+  - rag_chunks_used  — number of knowledge base chunks retrieved per reply
+  - llm_latency_ms   — LLM response time in milliseconds
+  - evaluation_score — heuristic quality score from evaluation module
+  - escalated        — whether the ticket was flagged for human review
 """
 
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Float
 
 from app.database import Base
 
@@ -16,6 +19,7 @@ from app.database import Base
 class Ticket(Base):
     __tablename__ = "tickets"
 
+    # Core fields (v1.0.0 — preserved)
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     text = Column(Text, nullable=False)
     category = Column(String(50), nullable=False)
@@ -27,3 +31,15 @@ class Ticket(Base):
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
     )
+
+    # New fields (v2.0.0 — nullable for backward compatibility with old records)
+    ml_confidence = Column(Float, nullable=True)        # predict_proba max [0.0, 1.0]
+    rag_chunks_used = Column(Integer, nullable=True, default=0)  # KB chunks retrieved
+    llm_latency_ms = Column(Float, nullable=True)       # LLM response time (ms)
+    evaluation_score = Column(Float, nullable=True)     # Heuristic quality score
+    escalated = Column(Boolean, nullable=True, default=False)    # Human review flag
+
+    # Computer Vision fields (v2.1.0)
+    has_image = Column(Boolean, nullable=True, default=False)
+    cv_metrics = Column(String, nullable=True)          # JSON string of latency metrics
+    detected_objects = Column(String, nullable=True)    # JSON string of objects + confidences

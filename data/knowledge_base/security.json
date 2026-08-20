@@ -1,0 +1,23 @@
+[
+  {
+    "id": "security_001",
+    "title": "Account Security Best Practices",
+    "content": "To keep your account secure: (1) Use a strong, unique password with at least 12 characters, mixing uppercase, lowercase, numbers, and symbols. (2) Enable two-factor authentication from Account Settings > Security. (3) Never share your password or API keys with anyone, including support staff. (4) Regularly review login activity in Account Settings > Security > Login History. (5) Revoke any unrecognized API keys immediately. (6) Log out of shared or public computers after use. (7) Keep your recovery email and phone number up to date.",
+    "category": "Account",
+    "tags": ["security", "password", "2fa", "best practices", "safe"]
+  },
+  {
+    "id": "security_002",
+    "title": "Recognizing and Reporting Phishing",
+    "content": "Phishing attempts try to steal your credentials by impersonating us. Signs of phishing: emails with misspelled domain names, urgent requests for your password, links that do not match platform.com. We will NEVER ask for your password via email or chat. If you receive a suspicious email claiming to be from us: (1) Do not click any links. (2) Forward the email to security@platform.com. (3) Delete the original email. If you entered your credentials on a fake site, reset your password immediately and enable 2FA.",
+    "category": "Account",
+    "tags": ["phishing", "security", "scam", "email", "fraud"]
+  },
+  {
+    "id": "security_003",
+    "title": "API Key Security",
+    "content": "API keys provide programmatic access to your account. Best practices: (1) Never commit API keys to public code repositories. (2) Use environment variables to store keys in applications. (3) Create separate keys for different applications — do not share a single key. (4) Set minimal permissions when creating keys. (5) Rotate keys regularly and immediately if you suspect compromise. (6) Delete unused keys from Account Settings > API Keys. If a key is exposed, revoke it immediately and create a new one.",
+    "category": "Technical",
+    "tags": ["api key", "security", "secret", "token", "credentials"]
+  }
+]

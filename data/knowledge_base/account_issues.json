@@ -1,0 +1,51 @@
+[
+  {
+    "id": "account_001",
+    "title": "Password Reset Process",
+    "content": "To reset your password, click 'Forgot Password' on the login page and enter your registered email address. A reset link will be sent within 5 minutes. Check your spam or junk folder if the email does not arrive. The reset link expires after 30 minutes. If you no longer have access to your registered email, contact support with proof of identity to initiate a manual account recovery.",
+    "category": "Account",
+    "tags": ["password", "reset", "login", "email", "forgot"]
+  },
+  {
+    "id": "account_002",
+    "title": "Account Suspended or Locked",
+    "content": "Accounts may be suspended for: non-payment, violation of terms of service, suspicious activity, or excessive failed login attempts. To resolve a payment-related suspension, update your payment method in Account Settings > Billing. For security-related suspensions, contact our security team at security@support.com. Accounts locked due to failed login attempts are automatically unlocked after 30 minutes, or you can use the password reset process.",
+    "category": "Account",
+    "tags": ["suspended", "locked", "account", "security", "access"]
+  },
+  {
+    "id": "account_003",
+    "title": "Changing Account Email Address",
+    "content": "To change your account email, go to Account Settings > Profile > Email Address. Enter the new email and your current password to confirm. A verification link is sent to the new email address. Click the link to complete the change. The old email will receive a notification about the change. If you did not initiate this change, contact support immediately to secure your account.",
+    "category": "Account",
+    "tags": ["email", "change", "account", "profile", "update"]
+  },
+  {
+    "id": "account_004",
+    "title": "Deleting Your Account and Data",
+    "content": "To delete your account, go to Account Settings > Account > Delete Account. You will be asked to confirm by entering your password and a confirmation phrase. Account deletion is permanent and cannot be undone. All your data, including files, history, and settings, will be permanently deleted within 30 days. If you have an active subscription, cancel it first to avoid future charges. You can export your data before deletion from Account Settings > Data Export.",
+    "category": "Account",
+    "tags": ["delete", "account", "data", "gdpr", "privacy"]
+  },
+  {
+    "id": "account_005",
+    "title": "Two-Factor Authentication Setup",
+    "content": "Two-factor authentication (2FA) adds an extra layer of security to your account. To enable it, go to Account Settings > Security > Two-Factor Authentication. You can use an authenticator app (Google Authenticator, Authy) or receive SMS codes. After setup, you will need both your password and the second factor to log in. Store your backup codes securely — they can be used if you lose access to your 2FA device. Contact support if you are locked out due to 2FA issues.",
+    "category": "Account",
+    "tags": ["2fa", "two-factor", "security", "authentication", "mfa"]
+  },
+  {
+    "id": "account_006",
+    "title": "Account Hacked or Compromised",
+    "content": "If you believe your account has been hacked, take these steps immediately: (1) Reset your password using the Forgot Password link. (2) Enable two-factor authentication. (3) Review recent login activity in Account Settings > Security > Login History. (4) Revoke any unrecognized API keys or connected applications. (5) Contact our security team at security@support.com with details of suspicious activity. We will investigate and help secure your account within 24 hours.",
+    "category": "Account",
+    "tags": ["hacked", "compromised", "security", "breach", "unauthorized"]
+  },
+  {
+    "id": "account_007",
+    "title": "Transferring Account Ownership",
+    "content": "To transfer account ownership to another user, the current account owner must go to Account Settings > Team > Members and select the new owner from the team list. The new owner must already be a team member. After confirming, the original owner's role changes to Admin. Billing responsibility transfers to the new owner. If you need to transfer to someone outside your current team, contact support for assisted transfer.",
+    "category": "Account",
+    "tags": ["transfer", "ownership", "team", "admin", "account"]
+  }
+]

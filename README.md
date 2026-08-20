@@ -1,251 +1,82 @@
-# AI-Powered Customer Support Platform
+# AI Customer Support Platform
 
-[![CI](https://github.com/kamalpraneeth/ai-support-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/kamalpraneeth/ai-support-platform/actions)
+An end-to-end AI-powered customer support platform combining machine learning, Generative AI, RAG, computer vision, responsible AI, automated evaluation, and human escalation.
 
-A full-stack portfolio project demonstrating ML classification, NLP, REST API design, and GenAI integration — built to showcase skills for **Software Engineer, Backend, Full Stack, AI/ML, and Gen AI** roles.
+## Core Capabilities
+├── Machine Learning Classification
+├── Data Engineering & Preprocessing
+├── Generative AI / LLM
+├── Prompt Engineering
+├── RAG
+├── Computer Vision
+├── OpenCV
+├── YOLO Object Detection
+├── Responsible AI
+├── Response Evaluation
+├── Human Escalation
+├── REST APIs
+├── Analytics & Monitoring
+├── Docker
+├── CI/CD
+└── Automated Testing
 
----
+## 📚 Documentation
 
-## Problem Statement
+The architecture and implementation details are thoroughly documented in the following guides:
 
-Customer support teams are overwhelmed by unclassified tickets. This platform automatically:
-1. **Classifies** each ticket into a category (Billing / Technical / Account / General)
-2. **Scores urgency** (High / Medium / Low) using rule-based keyword detection
-3. **Analyses sentiment** (Positive / Neutral / Negative) using VADER
-4. **Drafts a reply** using Groq's `llama-3.1-8b-instant` model, with a graceful fallback if the API is unavailable
+1. **[Architecture Overview](ARCHITECTURE.md)** — Core components and data flow.
+2. **[API Reference](API.md)** — REST API endpoints and schemas.
+3. **[ML Pipeline](ML_PIPELINE.md)** — Data engineering, TF-IDF + Logistic Regression classification, and heuristic scoring.
+4. **[Generative AI](GENAI.md)** — LLaMA 3.1 LLM integration and prompt engineering.
+5. **[RAG Pipeline](RAG.md)** — Knowledge base, TF-IDF retrieval, and Category Boosting.
+6. **[Response Evaluation](EVALUATION.md)** — Post-generation heuristic checks (completeness, groundedness, relevance).
+7. **[Responsible AI](RESPONSIBLE_AI.md)** — Prompt injection defense, PII flagging, output safety validation, and Human-in-the-Loop escalation logic.
+8. **[Monitoring & Analytics](MONITORING.md)** — Structured logging, internal counters, and business analytics.
+9. **[Deployment & CI](DEPLOYMENT.md)** — Docker usage, environment variables, and GitHub Actions CI.
+10. **[Computer Vision](COMPUTER_VISION.md)** — Optional OpenCV + YOLOv8 integration for analyzing image uploads.
 
----
+## 🚀 Quick Start
 
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Backend | FastAPI + Uvicorn |
-| ML — Classification | scikit-learn (TF-IDF + Logistic Regression) |
-| ML — Urgency | Rule-based keyword scoring |
-| ML — Sentiment | VADER (vaderSentiment) |
-| AI Reply | Groq API (`llama-3.1-8b-instant`) with static fallback |
-| Database | SQLite + SQLAlchemy ORM |
-| Frontend | Plain HTML + Vanilla JS + Tailwind CSS (CDN) |
-| Testing | pytest + FastAPI TestClient (httpx) |
-| Container | Docker (python:3.11-slim, single container) |
-| CI | GitHub Actions |
-| Deploy | Render (Docker web service) |
-
----
-
-## Project Structure
-
-```
-ai-support-platform/
-├── app/
-│   ├── main.py          # FastAPI app + routes
-│   ├── database.py      # SQLAlchemy + SQLite setup
-│   ├── models.py        # ORM model (Ticket table)
-│   ├── ai_reply.py      # Groq API integration + fallback
-│   └── ml/
-│       ├── classifier.py  # TF-IDF + LR pipeline
-│       ├── urgency.py     # Rule-based urgency scorer
-│       ├── sentiment.py   # VADER sentiment analyzer
-│       └── train.py       # Training script
-├── data/
-│   └── tickets.csv      # 80 labeled training samples
-├── models/
-│   └── classifier.pkl   # Serialized trained model (committed)
-├── templates/
-│   └── index.html       # Single-page frontend
-├── tests/
-│   ├── test_classifier.py  # ML layer unit tests (15 tests)
-│   └── test_api.py         # API integration tests (18 tests)
-├── .env.example
-├── .gitignore
-├── Dockerfile
-├── requirements.txt
-└── .github/workflows/ci.yml
-```
-
----
-
-## Local Setup
-
-### Prerequisites
+### 1. Prerequisites
 - Python 3.11+
-- pip
+- [Groq API Key](https://console.groq.com/keys) (required for AI generation; without it, the app safely falls back to canned responses).
 
-### Steps
-
+### 2. Setup
 ```bash
-# 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/ai-support-platform.git
+# Clone the repository
+git clone https://github.com/kamalpraneeth/ai-support-platform.git
 cd ai-support-platform
 
-# 2. Create and activate a virtual environment
+# Create and activate virtual environment
 python -m venv .venv
-# Windows:
-.venv\Scripts\activate
-# macOS/Linux:
-source .venv/bin/activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# 3. Install dependencies
+# Install dependencies
 pip install -r requirements.txt
+```
 
-# 4. Create .env from the template (then add your real key inside it)
-Copy-Item .env.example .env
-# Open .env in a text editor and replace:
-#   GROQ_API_KEY=your_groq_api_key_here
-# with your actual key from https://console.groq.com
+### 3. Environment Variables
+Copy the `.env.example` file to `.env` and configure your API key.
+```bash
+cp .env.example .env
+```
+Edit `.env` and set `GROQ_API_KEY=your_actual_api_key`.
 
-# 5. Train the classifier (creates models/classifier.pkl)
-python -m app.ml.train
-
-# 6. Start the development server
+### 4. Run the Application
+```bash
 uvicorn app.main:app --reload
-
-# App runs at: http://localhost:8000
-# API docs at: http://localhost:8000/docs
 ```
+The API will be available at `http://127.0.0.1:8000`. You can view the interactive OpenAPI docs at `http://127.0.0.1:8000/docs`.
 
----
-
-## API Reference
-
-### `GET /health`
-Basic health check.
-
-**Response:**
-```json
-{ "status": "ok", "version": "1.0.0" }
-```
-
----
-
-### `POST /ticket`
-Submit a support ticket for classification.
-
-**Request:**
-```bash
-curl -X POST http://localhost:8000/ticket \
-  -H "Content-Type: application/json" \
-  -d '{"text": "I cannot login to my account and I need help urgently"}'
-```
-
-**Response:**
-```json
-{
-  "id": 1,
-  "text": "I cannot login to my account and I need help urgently",
-  "category": "Account",
-  "urgency": "High",
-  "sentiment": "Negative",
-  "message": "Ticket received and classified."
-}
-```
-
----
-
-### `POST /ticket/reply`
-Generate an AI-drafted reply for a previously submitted ticket.
-
-**Request:**
-```bash
-curl -X POST http://localhost:8000/ticket/reply \
-  -H "Content-Type: application/json" \
-  -d '{"ticket_id": 1}'
-```
-
-**Response (with GROQ_API_KEY set):**
-```json
-{
-  "ticket_id": 1,
-  "reply": "Dear Customer,\n\nWe sincerely apologise for the difficulty you're experiencing accessing your account...",
-  "is_ai_generated": true
-}
-```
-
-**Response (without GROQ_API_KEY — fallback):**
-```json
-{
-  "ticket_id": 1,
-  "reply": "Thank you for reaching out to us. We have received your ticket...",
-  "is_ai_generated": false
-}
-```
-
----
-
-## Running Tests
-
+### 5. Run the Test Suite
+The project includes a comprehensive 175+ test suite covering ML, API, RAG, Computer Vision, and Responsible AI.
 ```bash
 pytest tests/ -v
 ```
 
-Expected output: **34 passed** (18 API integration tests + 16 ML unit tests).
+## 🏗️ Architecture Highlight
 
-The test suite uses an in-memory SQLite database and does **not** require a `GROQ_API_KEY` — the fallback path is tested explicitly.
+The core orchestration flow for a ticket is:
+`Image Processing (Optional) -> Validation -> ML Classification -> RAG Retrieval -> LLM Generation -> Output Evaluation -> Escalation Check`.
 
----
-
-## Docker
-
-```bash
-# Build the image (trains the model at build time)
-docker build -t ai-support-platform .
-
-# Run the container
-docker run -p 8000:8000 \
-  -e GROQ_API_KEY=your_key_here \
-  ai-support-platform
-
-# App available at http://localhost:8000
-```
-
----
-
-## Deployment on Render
-
-1. **Push to GitHub** — make sure your repo is public (or connect Render to your private repo).
-2. **Create a new Web Service** on [render.com](https://render.com).
-3. **Select "Docker"** as the environment.
-4. Set the following:
-   - **Build Command**: *(leave blank — Dockerfile handles everything)*
-   - **Start Command**: *(leave blank — CMD in Dockerfile)*
-   - **Port**: `8000`
-5. **Add Environment Variable** in Render's dashboard:
-   - `GROQ_API_KEY` → your Groq API key
-6. Deploy — Render will build the Docker image and start the service.
-
-> **Note**: The SQLite database is ephemeral in Docker. Data resets on each deploy. For production, add a Render Postgres instance and update `DATABASE_URL`.
-
----
-
-## Screenshots
-
-| Submit a Ticket | Analysis Results + AI Reply |
-|---|---|
-| ![Form View](screenshot1.png) | ![Results View](screenshot2.png) |
-
----
-
-## Design Decisions (for interviews)
-
-| Decision | Rationale |
-|---|---|
-| FastAPI over Flask | Async-ready, auto OpenAPI docs, Pydantic validation out of the box |
-| TF-IDF + Logistic Regression | Interpretable, fast, no GPU needed, achieves >90% accuracy on 80 samples with bigrams |
-| VADER for sentiment | Purpose-built for short informal text; pure Python, no model downloads |
-| Rule-based urgency | Transparent, auditable, easy to extend without retraining |
-| Groq over OpenAI | Free tier, no credit card, OpenAI-compatible — swappable in one line |
-| classifier.pkl committed | Reviewers can clone and run immediately without retraining |
-| Single-container Docker | Simplest possible deployment — one `docker run` starts everything |
-
-### Known Limitations
-
-| Limitation | Rationale & Future Improvement |
-|---|---|
-| VADER misses circumstantial/contextual negativity (e.g., "internet down before an exam" with no negative keywords) | Lexicon-based sentiment lacks semantic understanding; a transformer model (e.g., DistilBERT fine-tuned on support tickets) would capture this, at the cost of speed/simplicity |
-
----
-
-## License
-
-MIT
+By combining fast, deterministic ML for routing and strict Responsible AI rules for safety, we ensure that the LLM is only utilized when appropriate and safe.
