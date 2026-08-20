@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Support Platform — Submit a Ticket</title>
-  <meta name="description" content="AI-powered customer support ticket classifier. Submit your issue and get instant category, urgency, sentiment analysis plus an AI-drafted reply." />
+  <title>AI Support Platform — Dashboard</title>
+  <meta name="description" content="AI-powered customer support platform. Features ticket classification, chat assistant, and analytics." />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -32,161 +32,273 @@
     .badge-animate { transition: all 0.2s ease; }
     .badge-animate:hover { transform: scale(1.05); }
     textarea { resize: vertical; min-height: 120px; }
-    #reply-text { white-space: pre-wrap; }
+    .pre-wrap { white-space: pre-wrap; }
+    /* Scrollbar for chat */
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100">
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 flex flex-col">
 
   <!-- Background decoration -->
   <div class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
     <div class="absolute -top-40 -right-40 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse-slow"></div>
-    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-violet-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse-slow"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-violet-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse-slow" style="animation-delay: 1.5s;"></div>
   </div>
 
-  <div class="relative z-10 max-w-2xl mx-auto px-4 py-12">
-
-    <!-- Header -->
-    <header class="text-center mb-10 animate-fade-in">
-      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 mb-4 shadow-lg shadow-indigo-500/30">
-        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-      </div>
-      <h1 class="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-        AI Support Platform
-      </h1>
-      <p class="mt-2 text-slate-400 text-sm">
-        Powered by TF-IDF · VADER · Groq llama3-8b
-      </p>
-    </header>
-
-    <!-- ── Ticket Submission Card (shadcn/ui Card pattern) ── -->
-    <div id="submit-card" class="glass rounded-2xl p-6 shadow-2xl animate-slide-up">
-
-      <!-- Card Header -->
-      <div class="mb-5">
-        <h2 class="text-lg font-semibold text-white">Submit a Support Ticket</h2>
-        <p class="text-sm text-slate-400 mt-0.5">
-          Describe your issue and our AI will classify it instantly.
-        </p>
-      </div>
-
-      <!-- Card Content -->
-      <form id="ticket-form" novalidate>
-        <div class="space-y-4">
-
-          <!-- Textarea (shadcn/ui Input pattern) -->
-          <div>
-            <label for="ticket-input" class="block text-sm font-medium text-slate-300 mb-1.5">
-              Your issue
-            </label>
-            <textarea
-              id="ticket-input"
-              name="text"
-              placeholder="e.g. I was charged twice for my subscription this month and need an urgent refund..."
-              class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-              required
-              minlength="5"
-            ></textarea>
-            <p id="input-error" class="text-red-400 text-xs mt-1 hidden">Please describe your issue (at least 5 characters).</p>
+  <!-- Navbar -->
+  <nav class="relative z-20 border-b border-white/10 bg-slate-950/50 backdrop-blur-md sticky top-0">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <div class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/30">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
           </div>
+          <span class="font-bold tracking-tight text-white">AI Support Platform</span>
+        </div>
+        <div class="flex space-x-1">
+          <button onclick="switchTab('ticket')" id="tab-ticket" class="px-3 py-2 rounded-md text-sm font-medium transition-colors bg-indigo-500/20 text-indigo-300">Submit Ticket</button>
+          <button onclick="switchTab('chat')" id="tab-chat" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:bg-white/5 transition-colors">Chat Assistant</button>
+          <button onclick="switchTab('analytics')" id="tab-analytics" class="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:bg-white/5 transition-colors">Analytics</button>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-          <!-- Submit Button (shadcn/ui Button pattern) -->
-          <button
-            id="submit-btn"
-            type="submit"
-            class="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-sm font-medium px-4 py-2.5 transition-all duration-200 shadow-lg shadow-indigo-500/25 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg id="btn-icon" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-            <span id="btn-text">Analyse Ticket</span>
+  <main class="relative z-10 flex-grow w-full max-w-4xl mx-auto px-4 py-8 flex flex-col">
+
+    <!-- ── 1. TICKET VIEW ── -->
+    <div id="view-ticket" class="block animate-fade-in w-full max-w-2xl mx-auto">
+      <header class="text-center mb-8">
+        <h1 class="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Submit a Ticket</h1>
+        <p class="mt-2 text-slate-400 text-sm">Describe your issue or upload a screenshot, and our AI will classify it instantly.</p>
+      </header>
+
+      <!-- Ticket Form Card -->
+      <div class="glass rounded-2xl p-6 shadow-2xl">
+        <form id="ticket-form" novalidate>
+          <div class="space-y-4">
+            <div>
+              <label for="ticket-input" class="block text-sm font-medium text-slate-300 mb-1.5">Your issue</label>
+              <textarea id="ticket-input" name="text" placeholder="e.g. I was charged twice for my subscription this month and need an urgent refund..." class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200" required minlength="5"></textarea>
+              <p id="input-error" class="text-red-400 text-xs mt-1 hidden">Please describe your issue (at least 5 characters).</p>
+            </div>
+
+            <!-- Image Upload -->
+            <div>
+              <label for="ticket-image" class="block text-sm font-medium text-slate-300 mb-1.5">Screenshot (Optional)</label>
+              <input type="file" id="ticket-image" accept="image/*" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700 text-slate-100 text-sm file:mr-4 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-500/10 file:text-indigo-400 hover:file:bg-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200" />
+            </div>
+
+            <button id="submit-btn" type="submit" class="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-sm font-medium px-4 py-2.5 transition-all duration-200 shadow-lg shadow-indigo-500/25 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg id="btn-icon" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+              <span id="btn-text">Analyse Ticket</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Ticket Results Card -->
+      <div id="results-card" class="glass rounded-2xl p-6 shadow-2xl mt-4 hidden animate-slide-up">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h2 class="text-lg font-semibold text-white">Analysis Results</h2>
+            <p class="text-sm text-slate-400 mt-0.5">Ticket #<span id="ticket-id">—</span></p>
+          </div>
+          <div id="ai-badge-wrapper"></div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-4">
+          <div class="badge-animate">
+            <span class="text-xs font-medium text-slate-400 block mb-1">Category</span>
+            <span id="badge-category" class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset bg-indigo-500/10 text-indigo-300 ring-indigo-500/30">—</span>
+          </div>
+          <div class="badge-animate">
+            <span class="text-xs font-medium text-slate-400 block mb-1">Urgency</span>
+            <span id="badge-urgency" class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset">—</span>
+          </div>
+          <div class="badge-animate">
+            <span class="text-xs font-medium text-slate-400 block mb-1">Sentiment</span>
+            <span id="badge-sentiment" class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset">—</span>
+          </div>
+          <div class="badge-animate">
+            <span class="text-xs font-medium text-slate-400 block mb-1">Confidence</span>
+            <span id="badge-confidence" class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset bg-slate-500/10 text-slate-300 ring-slate-500/30">—</span>
+          </div>
+        </div>
+
+        <!-- Computer Vision Section (conditionally visible) -->
+        <div id="cv-results-section" class="mb-5 p-3 rounded-lg bg-slate-800/40 border border-slate-700/50 hidden">
+          <h3 class="text-xs font-semibold text-indigo-300 uppercase tracking-wider mb-2 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            Computer Vision Analysis
+          </h3>
+          <div class="grid grid-cols-2 gap-4 text-sm text-slate-300">
+            <div>
+              <strong class="block text-slate-400 text-xs">Detected Objects (YOLO)</strong>
+              <span id="cv-objects" class="block mt-0.5 text-slate-200">—</span>
+            </div>
+            <div>
+              <strong class="block text-slate-400 text-xs">Extracted Text (OCR)</strong>
+              <span id="cv-ocr" class="block mt-0.5 text-slate-200 italic line-clamp-2">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-700/50 mb-5"></div>
+
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+            <h3 class="text-sm font-semibold text-white">AI-Drafted Reply</h3>
+            <div id="reply-loading" class="hidden flex items-center gap-1.5 ml-auto">
+              <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay:0s"></div>
+              <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay:0.15s"></div>
+              <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay:0.3s"></div>
+            </div>
+          </div>
+          <div id="reply-text" class="text-sm text-slate-300 leading-relaxed bg-slate-800/40 rounded-lg p-4 border border-slate-700/50 min-h-[80px] pre-wrap">Generating reply…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 2. CHAT VIEW ── -->
+    <div id="view-chat" class="hidden animate-fade-in flex flex-col h-[75vh] w-full glass rounded-2xl overflow-hidden shadow-2xl relative">
+      <!-- Loading overlay -->
+      <div id="chat-initializing" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center hidden">
+        <div class="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="text-indigo-300 font-medium">Initializing secure session...</p>
+      </div>
+
+      <div class="px-4 py-3 border-b border-slate-700/50 bg-slate-800/40 flex justify-between items-center">
+        <div>
+          <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Virtual Assistant (RAG Enabled)
+          </h2>
+        </div>
+        <div class="text-xs text-slate-400" id="chat-session-display">Session ID: —</div>
+      </div>
+      
+      <!-- Chat messages container -->
+      <div id="chat-messages" class="flex-grow overflow-y-auto p-4 space-y-4 scrollbar-hide flex flex-col">
+        <!-- Initial welcome message -->
+        <div class="flex flex-col items-start">
+          <div class="max-w-[85%] bg-slate-800 border border-slate-700 rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm text-slate-200">
+            Hello! I am your AI Support Assistant. How can I help you today?
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat input -->
+      <form id="chat-form" class="p-4 border-t border-slate-700/50 bg-slate-800/20">
+        <div class="flex gap-2">
+          <input type="text" id="chat-input" placeholder="Type your message..." class="flex-grow px-4 py-2.5 rounded-full bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200" autocomplete="off" />
+          <button type="submit" id="chat-send-btn" class="flex-shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white transition-all duration-200 disabled:opacity-50">
+            <svg class="w-5 h-5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
           </button>
-
         </div>
       </form>
     </div>
 
-    <!-- ── Results Card (hidden until response) ── -->
-    <div id="results-card" class="glass rounded-2xl p-6 shadow-2xl mt-4 hidden animate-slide-up">
+    <!-- ── 3. ANALYTICS VIEW ── -->
+    <div id="view-analytics" class="hidden animate-fade-in w-full">
+      <header class="mb-6">
+        <h1 class="text-2xl font-bold tracking-tight text-white">System Analytics</h1>
+        <p class="text-slate-400 text-sm">Real-time platform metrics and ML evaluation data.</p>
+      </header>
 
-      <!-- Card Header -->
-      <div class="flex items-center justify-between mb-5">
-        <div>
-          <h2 class="text-lg font-semibold text-white">Analysis Results</h2>
-          <p class="text-sm text-slate-400 mt-0.5">Ticket #<span id="ticket-id">—</span></p>
-        </div>
-        <div id="ai-badge-wrapper"></div>
-      </div>
-
-      <!-- Badges Row (shadcn/ui Badge pattern) -->
-      <div class="flex flex-wrap gap-2 mb-6">
-
-        <!-- Category Badge -->
-        <div class="badge-animate">
-          <span class="text-xs font-medium text-slate-400 block mb-1">Category</span>
-          <span id="badge-category"
-            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset bg-indigo-500/10 text-indigo-300 ring-indigo-500/30">
-            —
-          </span>
-        </div>
-
-        <!-- Urgency Badge -->
-        <div class="badge-animate">
-          <span class="text-xs font-medium text-slate-400 block mb-1">Urgency</span>
-          <span id="badge-urgency"
-            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset">
-            —
-          </span>
-        </div>
-
-        <!-- Sentiment Badge -->
-        <div class="badge-animate">
-          <span class="text-xs font-medium text-slate-400 block mb-1">Sentiment</span>
-          <span id="badge-sentiment"
-            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset">
-            —
-          </span>
-        </div>
-
-      </div>
-
-      <!-- Divider -->
-      <div class="border-t border-slate-700/50 mb-5"></div>
-
-      <!-- AI Reply Section -->
-      <div>
-        <div class="flex items-center gap-2 mb-3">
-          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
-          <h3 class="text-sm font-semibold text-white">AI-Drafted Reply</h3>
-          <div id="reply-loading" class="hidden flex items-center gap-1.5 ml-auto">
-            <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay:0s"></div>
-            <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay:0.15s"></div>
-            <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay:0.3s"></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <!-- Ticket Stats -->
+        <div class="glass rounded-xl p-5 shadow-lg">
+          <h2 class="text-sm font-semibold text-indigo-300 mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            Ticket Volume
+          </h2>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Total Tickets</p>
+              <p id="stat-total-tickets" class="text-3xl font-bold text-white mt-1">—</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Escalation Rate</p>
+              <p id="stat-escalation" class="text-3xl font-bold text-rose-400 mt-1">—</p>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-slate-700/50">
+            <p class="text-xs text-slate-400 mb-2">Category Distribution</p>
+            <div id="stat-categories" class="flex flex-wrap gap-2 text-xs">
+              <!-- Rendered via JS -->
+              <span class="text-slate-500">Loading...</span>
+            </div>
           </div>
         </div>
-        <div id="reply-text"
-          class="text-sm text-slate-300 leading-relaxed bg-slate-800/40 rounded-lg p-4 border border-slate-700/50 min-h-[80px]">
-          Generating reply…
+
+        <!-- Chat / Generative Stats -->
+        <div class="glass rounded-xl p-5 shadow-lg">
+          <h2 class="text-sm font-semibold text-indigo-300 mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            AI Engine Performance
+          </h2>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Avg Latency</p>
+              <p id="stat-latency" class="text-3xl font-bold text-white mt-1">—</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">AI Authored</p>
+              <p id="stat-ai-ratio" class="text-3xl font-bold text-emerald-400 mt-1">—</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Active Sessions</p>
+              <p id="stat-sessions" class="text-lg font-bold text-white mt-0.5">—</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 uppercase tracking-wider">Messages</p>
+              <p id="stat-messages" class="text-lg font-bold text-white mt-0.5">—</p>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- ML Metrics -->
+      <div class="glass rounded-xl p-5 shadow-lg">
+        <h2 class="text-sm font-semibold text-violet-300 mb-4 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+          Classification Model Metrics
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div>
+            <p class="text-xs text-slate-400 uppercase tracking-wider">Test Accuracy</p>
+            <p id="stat-ml-acc" class="text-2xl font-bold text-white mt-1">—</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400 uppercase tracking-wider">Macro F1</p>
+            <p id="stat-ml-f1" class="text-2xl font-bold text-white mt-1">—</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400 uppercase tracking-wider">Hold-out Set Size</p>
+            <p id="stat-ml-size" class="text-2xl font-bold text-slate-300 mt-1">—</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400 uppercase tracking-wider">Generated At</p>
+            <p id="stat-ml-date" class="text-sm font-medium text-slate-300 mt-2">—</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Error toast -->
-    <div id="error-toast"
-      class="fixed bottom-6 right-6 bg-red-900/90 border border-red-700 text-red-200 text-sm rounded-xl px-4 py-3 shadow-2xl hidden animate-slide-up max-w-xs">
+    <div id="error-toast" class="fixed bottom-6 right-6 bg-red-900/90 border border-red-700 text-red-200 text-sm rounded-xl px-4 py-3 shadow-2xl hidden animate-slide-up max-w-xs z-50">
       <strong>Error:</strong> <span id="error-msg">Something went wrong.</span>
     </div>
 
-  </div><!-- /container -->
+  </main>
 
   <script>
-    // ── Helpers ─────────────────────────────────────────────────────────────
-
     const $ = id => document.getElementById(id);
 
     function showError(msg) {
@@ -195,56 +307,87 @@
       setTimeout(() => $('error-toast').classList.add('hidden'), 5000);
     }
 
-    function setLoading(isLoading) {
+    // ── Tab Management ───────────────────────────────────────────────────────
+    
+    let chatSessionId = null;
+    let analyticsLoaded = false;
+
+    function switchTab(tab) {
+      // Hide all views
+      $('view-ticket').classList.add('hidden');
+      $('view-chat').classList.add('hidden');
+      $('view-analytics').classList.add('hidden');
+      
+      // Reset tab button styles
+      ['ticket', 'chat', 'analytics'].forEach(t => {
+        const btn = $(`tab-${t}`);
+        btn.className = "px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:bg-white/5 transition-colors";
+      });
+
+      // Show selected view & highlight button
+      $(`view-${tab}`).classList.remove('hidden');
+      $(`tab-${tab}`).className = "px-3 py-2 rounded-md text-sm font-medium transition-colors bg-indigo-500/20 text-indigo-300";
+
+      // Tab-specific initialization
+      if (tab === 'chat' && !chatSessionId) {
+        initChatSession();
+      }
+      if (tab === 'analytics' && !analyticsLoaded) {
+        loadAnalytics();
+      }
+    }
+
+    // ── 1. Ticket View Logic ────────────────────────────────────────────────
+    
+    function setTicketLoading(isLoading) {
       const btn = $('submit-btn');
       btn.disabled = isLoading;
       $('btn-text').textContent = isLoading ? 'Analysing…' : 'Analyse Ticket';
     }
 
-    // Badge colour helpers (shadcn/ui-inspired ring+bg pattern)
-    const urgencyStyles = {
-      High:   'bg-red-500/10 text-red-300 ring-red-500/30',
-      Medium: 'bg-amber-500/10 text-amber-300 ring-amber-500/30',
-      Low:    'bg-green-500/10 text-green-300 ring-green-500/30',
-    };
-    const sentimentStyles = {
-      Positive: 'bg-emerald-500/10 text-emerald-300 ring-emerald-500/30',
-      Neutral:  'bg-slate-500/10 text-slate-300 ring-slate-500/30',
-      Negative: 'bg-rose-500/10 text-rose-300 ring-rose-500/30',
-    };
+    const urgencyStyles = { High: 'bg-red-500/10 text-red-300 ring-red-500/30', Medium: 'bg-amber-500/10 text-amber-300 ring-amber-500/30', Low: 'bg-green-500/10 text-green-300 ring-green-500/30' };
+    const sentimentStyles = { Positive: 'bg-emerald-500/10 text-emerald-300 ring-emerald-500/30', Neutral: 'bg-slate-500/10 text-slate-300 ring-slate-500/30', Negative: 'bg-rose-500/10 text-rose-300 ring-rose-500/30' };
 
     function applyBadge(elementId, text, styleMap, defaultStyle) {
       const el = $(elementId);
       el.textContent = text;
-      // Reset classes first
-      el.className = 'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset';
-      el.className += ' ' + (styleMap[text] || defaultStyle);
+      el.className = 'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ' + (styleMap[text] || defaultStyle);
     }
-
-    // ── Form Submit ──────────────────────────────────────────────────────────
 
     $('ticket-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const text = $('ticket-input').value.trim();
+      const imageFile = $('ticket-image').files[0];
 
-      // Client-side validation
       if (text.length < 5) {
         $('input-error').classList.remove('hidden');
         return;
       }
       $('input-error').classList.add('hidden');
 
-      setLoading(true);
+      setTicketLoading(true);
       $('results-card').classList.add('hidden');
+      $('cv-results-section').classList.add('hidden');
 
       try {
-        // ── Step 1: POST /ticket ────────────────────────────────────────────
-        const ticketRes = await fetch('/ticket', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text }),
-        });
+        let ticketRes;
+        
+        // Use multipart if image exists, else JSON
+        if (imageFile) {
+          const formData = new FormData();
+          formData.append("text", text);
+          formData.append("image", imageFile);
+          ticketRes = await fetch('/ticket/with-image', {
+            method: 'POST',
+            body: formData
+          });
+        } else {
+          ticketRes = await fetch('/ticket', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text })
+          });
+        }
 
         if (!ticketRes.ok) {
           const err = await ticketRes.json().catch(() => ({}));
@@ -253,19 +396,41 @@
 
         const ticket = await ticketRes.json();
 
-        // ── Populate badges ─────────────────────────────────────────────────
+        // Populate badges
         $('ticket-id').textContent = ticket.id;
         applyBadge('badge-category', ticket.category, {}, 'bg-indigo-500/10 text-indigo-300 ring-indigo-500/30');
         applyBadge('badge-urgency', ticket.urgency, urgencyStyles, 'bg-slate-500/10 text-slate-300 ring-slate-500/30');
         applyBadge('badge-sentiment', ticket.sentiment, sentimentStyles, 'bg-slate-500/10 text-slate-300 ring-slate-500/30');
+        
+        // Confidence badge
+        if (ticket.ml_confidence !== undefined && ticket.ml_confidence !== null) {
+          const confPct = Math.round(ticket.ml_confidence * 100);
+          $('badge-confidence').textContent = `${confPct}%`;
+        } else {
+          $('badge-confidence').textContent = "N/A";
+        }
+
+        // Show CV results if present
+        if (ticket.has_image) {
+          $('cv-results-section').classList.remove('hidden');
+          
+          let yoloSummary = "None detected";
+          if (ticket.detected_objects && ticket.detected_objects.length > 0) {
+            yoloSummary = ticket.detected_objects.map(obj => `${obj.label} (${Math.round(obj.confidence*100)}%)`).join(', ');
+          }
+          $('cv-objects').textContent = yoloSummary;
+
+          // OCR text extraction check. (OCR text was appended to the ticket text by backend, we parse it out for UI)
+          const ocrMatch = ticket.text.match(/\[Extracted text from screenshot\]: (.*)/);
+          $('cv-ocr').textContent = ocrMatch ? ocrMatch[1] : "None found";
+        }
 
         $('reply-text').textContent = 'Generating reply…';
         $('reply-loading').classList.remove('hidden');
         $('results-card').classList.remove('hidden');
+        setTicketLoading(false);
 
-        setLoading(false);
-
-        // ── Step 2: POST /ticket/reply ──────────────────────────────────────
+        // Fetch Reply
         const replyRes = await fetch('/ticket/reply', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -282,22 +447,156 @@
         const replyData = await replyRes.json();
         $('reply-text').textContent = replyData.reply;
 
-        // Show whether the reply is AI or fallback
-        $('ai-badge-wrapper').innerHTML = replyData.is_ai_generated
-          ? `<span class="inline-flex items-center gap-1 text-xs font-medium bg-violet-500/10 text-violet-300 ring-1 ring-violet-500/30 rounded-full px-2.5 py-0.5">
+        // Grounding/AI Badge
+        let badgeHtml = '';
+        if (replyData.is_ai_generated) {
+           badgeHtml = `<span class="inline-flex items-center gap-1 text-xs font-medium bg-violet-500/10 text-violet-300 ring-1 ring-violet-500/30 rounded-full px-2.5 py-0.5">
                <span class="w-1.5 h-1.5 rounded-full bg-violet-400 inline-block"></span> AI Reply
-             </span>`
-          : `<span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-500/10 text-slate-400 ring-1 ring-slate-500/30 rounded-full px-2.5 py-0.5">
-               Template Reply
              </span>`;
+           if (replyData.rag_chunks_used > 0) {
+             badgeHtml += `<span class="inline-flex items-center gap-1 text-xs font-medium bg-emerald-500/10 text-emerald-300 ring-1 ring-emerald-500/30 rounded-full px-2.5 py-0.5 ml-2">
+               🧠 RAG Grounded
+             </span>`;
+           }
+        } else {
+           badgeHtml = `<span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-500/10 text-slate-400 ring-1 ring-slate-500/30 rounded-full px-2.5 py-0.5">Template Reply</span>`;
+        }
+        $('ai-badge-wrapper').innerHTML = badgeHtml;
 
       } catch (err) {
-        setLoading(false);
+        setTicketLoading(false);
         showError(err.message || 'Unexpected error. Check the console.');
-        console.error(err);
       }
     });
-  </script>
 
+    // ── 2. Chat View Logic ──────────────────────────────────────────────────
+    
+    async function initChatSession() {
+      $('chat-initializing').classList.remove('hidden');
+      try {
+        const res = await fetch('/chat/session', { method: 'POST' });
+        if (!res.ok) throw new Error("Failed to initialize session");
+        const data = await res.json();
+        chatSessionId = data.session_id;
+        $('chat-session-display').textContent = `Session ID: ${chatSessionId.substring(0,8)}...`;
+      } catch (e) {
+        showError("Chat Service Offline");
+      } finally {
+        $('chat-initializing').classList.add('hidden');
+      }
+    }
+
+    function appendMessage(role, text, metadata = null) {
+      const container = $('chat-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `flex flex-col ${role === 'user' ? 'items-end' : 'items-start'}`;
+      
+      let innerClass = role === 'user' 
+        ? "max-w-[85%] bg-indigo-600 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm"
+        : "max-w-[85%] bg-slate-800 border border-slate-700 rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm text-slate-200 pre-wrap";
+
+      let metaHtml = "";
+      if (role === 'assistant' && metadata && metadata.is_ai_generated) {
+        metaHtml = `<div class="text-[10px] text-slate-500 mt-1 ml-1 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-violet-400 inline-block"></span> AI Generated
+        </div>`;
+      }
+
+      msgDiv.innerHTML = `<div class="${innerClass}">${text}</div>${metaHtml}`;
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    $('chat-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const input = $('chat-input');
+      const text = input.value.trim();
+      if (!text || !chatSessionId) return;
+
+      appendMessage('user', text);
+      input.value = '';
+      $('chat-send-btn').disabled = true;
+
+      // Add temporary loading bubbles
+      const loadingId = 'loading-' + Date.now();
+      const container = $('chat-messages');
+      container.insertAdjacentHTML('beforeend', `
+        <div id="${loadingId}" class="flex flex-col items-start">
+          <div class="bg-slate-800 border border-slate-700 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
+             <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0s"></div>
+             <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.15s"></div>
+             <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.3s"></div>
+          </div>
+        </div>
+      `);
+      container.scrollTop = container.scrollHeight;
+
+      try {
+        const res = await fetch('/chat/message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: chatSessionId, message: text })
+        });
+        
+        $(loadingId).remove();
+        $('chat-send-btn').disabled = false;
+        
+        if (!res.ok) throw new Error("Message failed");
+        
+        const data = await res.json();
+        appendMessage('assistant', data.reply, data);
+        
+      } catch (err) {
+        $(loadingId).remove();
+        $('chat-send-btn').disabled = false;
+        appendMessage('assistant', "⚠ Connection error. Please try again.");
+      }
+    });
+
+    // ── 3. Analytics View Logic ─────────────────────────────────────────────
+
+    async function loadAnalytics() {
+      try {
+        const [fullRes, metricsRes] = await Promise.all([
+          fetch('/analytics'),
+          fetch('/metrics')
+        ]);
+        
+        if (fullRes.ok) {
+          const data = await fullRes.json();
+          const t = data.tickets;
+          const a = data.ai;
+
+          $('stat-total-tickets').textContent = t.total_tickets;
+          $('stat-escalation').textContent = t.total_tickets > 0 ? Math.round((t.escalated_tickets / t.total_tickets)*100) + '%' : '0%';
+          
+          let catHtml = '';
+          for (const [cat, count] of Object.entries(t.by_category)) {
+             catHtml += `<span class="bg-slate-800 border border-slate-700 px-2 py-1 rounded">${cat}: <strong>${count}</strong></span>`;
+          }
+          $('stat-categories').innerHTML = catHtml || '<span class="text-slate-500">No data</span>';
+
+          $('stat-latency').textContent = a.avg_latency_ms > 0 ? Math.round(a.avg_latency_ms) + 'ms' : '—';
+          $('stat-ai-ratio').textContent = t.total_tickets > 0 ? Math.round((a.total_ai_replies / t.total_tickets)*100) + '%' : '0%';
+          $('stat-sessions').textContent = a.total_chat_sessions;
+          $('stat-messages').textContent = a.total_chat_messages;
+        }
+
+        if (metricsRes.ok) {
+          const ml = await metricsRes.json();
+          if (ml.status === 'ok') {
+            $('stat-ml-acc').textContent = (ml.test_accuracy * 100).toFixed(2) + '%';
+            $('stat-ml-f1').textContent = (ml.macro_f1 * 100).toFixed(2) + '%';
+            $('stat-ml-size').textContent = ml.dataset_size_test || '—';
+            const date = new Date(ml.timestamp);
+            $('stat-ml-date').textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          }
+        }
+        analyticsLoaded = true;
+      } catch (e) {
+        showError("Failed to load analytics");
+      }
+    }
+  </script>
 </body>
 </html>

@@ -8,9 +8,9 @@ An end-to-end AI-powered customer support platform combining machine learning, G
 ├── Generative AI / LLM
 ├── Prompt Engineering
 ├── RAG
-├── Computer Vision
-├── OpenCV
-├── YOLO Object Detection
+├── Conversational Chatbot
+├── Computer Vision (YOLOv8)
+├── Optical Character Recognition (easyocr)
 ├── Responsible AI
 ├── Response Evaluation
 ├── Human Escalation
@@ -69,7 +69,7 @@ uvicorn app.main:app --reload
 The API will be available at `http://127.0.0.1:8000`. You can view the interactive OpenAPI docs at `http://127.0.0.1:8000/docs`.
 
 ### 5. Run the Test Suite
-The project includes a comprehensive 175+ test suite covering ML, API, RAG, Computer Vision, and Responsible AI.
+The project includes a comprehensive 185+ test suite covering ML, API, RAG, Computer Vision, and Responsible AI.
 ```bash
 pytest tests/ -v
 ```

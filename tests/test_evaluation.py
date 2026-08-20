@@ -12,7 +12,6 @@ Tests cover:
   - No KB chunks: groundedness passes by default
 """
 
-import pytest
 
 from app.evaluation import (
     evaluate_response,
@@ -22,7 +21,6 @@ from app.evaluation import (
     _check_safety,
     _check_completeness,
     _check_signoff,
-    MIN_RESPONSE_LENGTH,
 )
 
 # ---------------------------------------------------------------------------
@@ -162,9 +160,13 @@ class TestEvaluateResponse:
         result = evaluate_response(GOOD_REPLY, TICKET_TEXT)
         assert result.word_count == len(GOOD_REPLY.split())
 
-    def test_no_kb_chunks_does_not_set_needs_regeneration_only_for_groundedness(self):
+    def test_no_kb_chunks_does_not_set_needs_regeneration_only_for_groundedness(
+            self):
         """Without KB chunks, groundedness passes — so only other checks matter."""
-        result = evaluate_response(GOOD_REPLY, TICKET_TEXT, retrieved_chunk_contents=None)
+        result = evaluate_response(
+            GOOD_REPLY,
+            TICKET_TEXT,
+            retrieved_chunk_contents=None)
         assert result.grounded is True
 
     def test_to_dict_returns_dict(self):

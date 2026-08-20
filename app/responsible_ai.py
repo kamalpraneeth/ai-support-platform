@@ -75,7 +75,8 @@ HALLUCINATION_RISK_PATTERNS = [
 
 # Escalation thresholds
 ESCALATION_CONFIDENCE_THRESHOLD = 0.45   # Escalate if confidence below this
-ESCALATION_CATEGORIES = {"Account"}       # Security-adjacent categories always reviewed
+# Security-adjacent categories always reviewed
+ESCALATION_CATEGORIES = {"Account"}
 
 
 # ---------------------------------------------------------------------------
@@ -197,7 +198,8 @@ def validate_input(text: str) -> InputValidationResult:
             detected_pii,
         )
         result.warning_message = (
-            f"Note: PII may be present in this ticket ({', '.join(detected_pii)}). "
+            f"Note: PII may be present in this ticket ({
+                ', '.join(detected_pii)}). "
             "Please do not include sensitive personal information in support tickets."
         )
 
@@ -283,7 +285,10 @@ def should_escalate(
             f"Low classifier confidence ({confidence:.0%}). "
             "Ticket classification may be incorrect — human review recommended."
         )
-        logger.info("Escalation triggered (low confidence=%.3f): '%s'", confidence, reason)
+        logger.info(
+            "Escalation triggered (low confidence=%.3f): '%s'",
+            confidence,
+            reason)
         return True, reason
 
     # Trigger 2: High urgency + Negative sentiment
@@ -303,7 +308,9 @@ def should_escalate(
                 f"Security-sensitive category ({category}) with High urgency. "
                 "Escalating for human review."
             )
-            logger.info("Escalation triggered (security category + high urgency): %s", category)
+            logger.info(
+                "Escalation triggered (security category + high urgency): %s",
+                category)
             return True, reason
 
     return False, ""

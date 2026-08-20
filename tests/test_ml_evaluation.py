@@ -9,8 +9,6 @@ Tests cover:
   - Save/load evaluation report round-trip
 """
 
-import tempfile
-from pathlib import Path
 
 import pytest
 
@@ -24,7 +22,8 @@ from app.ml.evaluate import (
 
 
 # Minimal dataset for testing evaluation (not for training quality).
-# Needs at least cv_folds samples per class. We use 5 samples x 4 classes = 20 total.
+# Needs at least cv_folds samples per class. We use 5 samples x 4 classes
+# = 20 total.
 TEXTS = [
     "I was charged twice for my subscription",
     "My payment failed but money was deducted",
@@ -60,7 +59,8 @@ class TestEvaluateModel:
     def metrics(self):
         """Run evaluation once for all tests in this class. Use 3-fold CV for small test dataset."""
         pipeline = build_pipeline()
-        return evaluate_model(pipeline, TEXTS, LABELS, test_size=0.25, random_state=42, cv_folds=3)
+        return evaluate_model(pipeline, TEXTS, LABELS,
+                              test_size=0.25, random_state=42, cv_folds=3)
 
     def test_returns_evaluation_metrics_instance(self, metrics):
         assert isinstance(metrics, EvaluationMetrics)
@@ -116,7 +116,13 @@ class TestEvaluateModel:
 class TestSaveLoadReport:
     def test_save_and_load_round_trip(self, tmp_path):
         pipeline = build_pipeline()
-        metrics = evaluate_model(pipeline, TEXTS, LABELS, test_size=0.25, random_state=42, cv_folds=3)
+        metrics = evaluate_model(
+            pipeline,
+            TEXTS,
+            LABELS,
+            test_size=0.25,
+            random_state=42,
+            cv_folds=3)
 
         report_path = tmp_path / "test_evaluation_report.json"
         save_evaluation_report(metrics, path=report_path)

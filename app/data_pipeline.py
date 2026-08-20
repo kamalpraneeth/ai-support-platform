@@ -112,24 +112,38 @@ def validate_record(
     category = row.get("category", "").strip()
 
     if not text:
-        errors.append(ValidationError(row_index, "text", "Missing or empty text"))
+        errors.append(
+            ValidationError(
+                row_index,
+                "text",
+                "Missing or empty text"))
         ok = False
 
     if not category:
-        errors.append(ValidationError(row_index, "category", "Missing or empty category"))
+        errors.append(
+            ValidationError(
+                row_index,
+                "category",
+                "Missing or empty category"))
         ok = False
     elif category not in VALID_CATEGORIES:
         errors.append(
             ValidationError(
                 row_index,
                 "category",
-                f"Invalid category '{category}'. Expected one of: {sorted(VALID_CATEGORIES)}",
+                f"Invalid category '{category}'. Expected one of: {
+                    sorted(VALID_CATEGORIES)}",
             )
         )
         ok = False
 
     if text and len(text) < 5:
-        errors.append(ValidationError(row_index, "text", f"Text too short ({len(text)} chars)"))
+        errors.append(
+            ValidationError(
+                row_index,
+                "text",
+                f"Text too short ({
+                    len(text)} chars)"))
         ok = False
 
     return ok
@@ -257,7 +271,8 @@ def run_pipeline(
     lengths = []
 
     for record in clean_records:
-        class_counts[record.category] = class_counts.get(record.category, 0) + 1
+        class_counts[record.category] = class_counts.get(
+            record.category, 0) + 1
         total_length += record.text_length
         total_words += record.word_count
         lengths.append(record.text_length)
@@ -267,7 +282,8 @@ def run_pipeline(
     if class_counts:
         min_count = min(class_counts.values())
         max_count = max(class_counts.values())
-        report.class_balance_ratio = round(min_count / max_count, 3) if max_count > 0 else 0.0
+        report.class_balance_ratio = round(
+            min_count / max_count, 3) if max_count > 0 else 0.0
 
     report.avg_text_length = round(total_length / len(clean_records), 1)
     report.avg_word_count = round(total_words / len(clean_records), 1)
@@ -297,7 +313,9 @@ def _log_summary(report: DataQualityReport) -> None:
     logger.info("  Duplicates removed:%d", report.duplicates_removed)
     logger.info("  Clean records:     %d", report.total_valid_rows)
     logger.info("  Class distribution: %s", report.class_distribution)
-    logger.info("  Balance ratio:     %.3f (1.0 = perfect)", report.class_balance_ratio)
+    logger.info(
+        "  Balance ratio:     %.3f (1.0 = perfect)",
+        report.class_balance_ratio)
     logger.info("  Avg text length:   %.1f chars", report.avg_text_length)
     logger.info("  Validation errors: %d", len(report.validation_errors))
 

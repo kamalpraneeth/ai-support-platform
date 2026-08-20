@@ -11,7 +11,6 @@ Key functions:
   build_pipeline()           — construct a fresh TF-IDF + LR pipeline
 """
 
-import os
 import pickle
 from pathlib import Path
 
@@ -54,7 +53,8 @@ def predict_category(text: str, model: Pipeline | None = None) -> str:
     return prediction
 
 
-def predict_with_confidence(text: str, model: Pipeline | None = None) -> tuple[str, float]:
+def predict_with_confidence(
+        text: str, model: Pipeline | None = None) -> tuple[str, float]:
     """
     Predict category and return the classifier's confidence score.
 

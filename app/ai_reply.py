@@ -69,11 +69,14 @@ def generate_reply(ticket_text: str) -> tuple[str, bool]:
             temperature=0.7,
         )
         reply = response.choices[0].message.content.strip()
-        logger.info("Groq reply generated successfully (%d chars).", len(reply))
+        logger.info(
+            "Groq reply generated successfully (%d chars).",
+            len(reply))
         return reply, True
 
     except Exception as exc:
-        # Log exception type so auth/network/rate-limit errors are distinguishable
+        # Log exception type so auth/network/rate-limit errors are
+        # distinguishable
         logger.error(
             "Groq API call failed [%s]: %s — returning fallback reply.",
             type(exc).__name__,

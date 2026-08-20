@@ -86,7 +86,8 @@ class TestKnowledgeBaseLoader:
             assert doc.doc_id
             assert doc.title
             assert doc.content
-            assert doc.category in {"Billing", "Technical", "Account", "General"}
+            assert doc.category in {
+                "Billing", "Technical", "Account", "General"}
 
     def test_empty_directory_returns_empty_list(self, tmp_path):
         """Empty directory should return empty list, not error."""
@@ -102,8 +103,13 @@ class TestKnowledgeBaseLoader:
 
     def test_skips_document_with_missing_fields(self, tmp_path):
         """Documents missing required fields should be skipped."""
-        valid_doc = [{"id": "x", "title": "T", "content": "C", "category": "Billing", "tags": []}]
-        missing_doc = [{"id": "y", "title": "No content or category"}]  # missing content, category
+        valid_doc = [{"id": "x",
+                      "title": "T",
+                      "content": "C",
+                      "category": "Billing",
+                      "tags": []}]
+        # missing content, category
+        missing_doc = [{"id": "y", "title": "No content or category"}]
 
         file1 = tmp_path / "valid.json"
         file1.write_text(json.dumps(valid_doc), encoding="utf-8")
@@ -117,8 +123,10 @@ class TestKnowledgeBaseLoader:
     def test_duplicate_ids_are_deduplicated(self, tmp_path):
         """Duplicate document IDs should be skipped."""
         docs_data = [
-            {"id": "dup_001", "title": "T1", "content": "C1", "category": "Billing", "tags": []},
-            {"id": "dup_001", "title": "T2", "content": "C2", "category": "Technical", "tags": []},
+            {"id": "dup_001", "title": "T1", "content": "C1",
+                "category": "Billing", "tags": []},
+            {"id": "dup_001", "title": "T2", "content": "C2",
+                "category": "Technical", "tags": []},
         ]
         file1 = tmp_path / "dupes.json"
         file1.write_text(json.dumps(docs_data), encoding="utf-8")
@@ -149,7 +157,8 @@ class TestKnowledgeRetriever:
     def test_retriever_is_ready_after_build(self, built_retriever):
         assert built_retriever.is_ready is True
 
-    def test_document_count_matches_indexed_documents(self, built_retriever, sample_documents):
+    def test_document_count_matches_indexed_documents(
+            self, built_retriever, sample_documents):
         assert built_retriever.document_count == len(sample_documents)
 
     def test_retrieve_returns_list(self, built_retriever):
@@ -167,10 +176,12 @@ class TestKnowledgeRetriever:
 
     def test_relevant_query_returns_results(self, built_retriever):
         """A clear billing query should return at least 1 result."""
-        results = built_retriever.retrieve("I need a refund for my billing charge", top_k=3)
+        results = built_retriever.retrieve(
+            "I need a refund for my billing charge", top_k=3)
         assert len(results) >= 1
 
-    def test_category_boost_ranks_matching_category_higher(self, built_retriever):
+    def test_category_boost_ranks_matching_category_higher(
+            self, built_retriever):
         """With category=Billing, billing document should rank first or near first."""
         results = built_retriever.retrieve(
             "refund payment billing",
@@ -178,7 +189,8 @@ class TestKnowledgeRetriever:
             top_k=4,
         )
         if len(results) >= 1:
-            # The billing document should have category_matched=True if it's top-1
+            # The billing document should have category_matched=True if it's
+            # top-1
             top_result = results[0]
             assert top_result.category_matched or top_result.similarity_score > 0
 

@@ -1,54 +1,19 @@
-# AI Support Platform — Deployment
+# Deployment Strategy
 
-The platform is containerized using Docker and is ready for deployment to any modern cloud environment (AWS ECS, Google Cloud Run, Azure Container Apps, or Kubernetes).
+This AI Customer Support Platform is deployed via Docker to **Render**.
 
-## 1. Dockerization
+## Architectural Decisions for Deployment
 
-The application is built using a minimal `python:3.11-slim` base image.
+While many applications opt for serverless deployments (such as AWS App Runner, AWS Lambda, or Vercel), this platform utilizes a Docker-native persistent service on Render. This was a deliberate engineering decision based on the specific constraints of our machine learning pipeline and available infrastructure tiers:
 
-### Building the Image
-```bash
-docker build -t ai-support-platform:latest .
-```
+1. **Long-Running Process Limits**: Serverless functions often have strict execution timeouts (e.g., 10 seconds for Vercel). Loading Heavy transformers (`distilbert`) and OCR engines (`easyocr`) requires more time, particularly on cold starts.
+2. **Package Size Constraints**: AI dependencies (`torch`, `transformers`, `easyocr`, `opencv-python-headless`) result in an environment size well over 2GB. Serverless platforms often enforce bundle limits (typically 250MB to 500MB) which completely precludes packaging real PyTorch models.
+3. **Lazy Loading into Memory**: By running a dedicated Docker container, we can lazily load models into persistent RAM. The first request that includes an image loads the YOLOv8 and easyOCR models, and subsequent requests benefit from zero-load inference.
+4. **Persistent SQLite Database**: The system utilizes SQLite to store ticket history, session state, and analytics. Render web services support disk mounting for persistent databases without the overhead of spinning up an external PostgreSQL/RDS instance for this portfolio demonstration.
 
-### Running Locally
-To run the container locally, you must provide your Groq API key:
-```bash
-docker run -d \
-  -p 8000:8000 \
-  -e GROQ_API_KEY="your-api-key-here" \
-  --name ai-support \
-  ai-support-platform:latest
-```
+## CI/CD Pipeline
 
-## 2. Environment Variables
+The project uses **GitHub Actions** for Continuous Integration and Continuous Deployment.
 
-The application behavior is controlled via environment variables. In production, these should be securely injected via a secret manager.
-
-| Variable | Description | Required | Default |
-|----------|-------------|----------|---------|
-| `GROQ_API_KEY` | Your API key for Groq's LLaMA 3.1 LLM | Yes (for AI) | None (falls back to canned replies) |
-| `DATABASE_URL` | SQLAlchemy connection string | No | `sqlite:///./support.db` |
-| `PORT` | The port the FastAPI server runs on inside the container | No | `8000` |
-| `CORS_ORIGINS` | Comma-separated list of allowed frontend origins | No | `*` |
-
-## 3. CI/CD Pipeline
-
-We utilize GitHub Actions (`.github/workflows/ci.yml`) for Continuous Integration.
-
-**Trigger:** The workflow runs on every `push` and `pull_request` to any branch.
-
-**Jobs:**
-1. **Linting**: Runs `flake8` to enforce Python PEP8 style guidelines.
-2. **ML Training & Validation**: Runs `python -m app.ml.train` to ensure the ML pipeline can train successfully on the latest data and evaluates performance.
-3. **Automated Tests**: Runs the `pytest` test suite, executing >160 tests covering the API, RAG pipeline, ML models, evaluation heuristics, and Responsible AI constraints.
-4. **Coverage Reporting**: Generates a `coverage.xml` report.
-
-If any of these steps fail, the CI pipeline fails, preventing broken code from merging.
-
-## 4. Production Considerations
-
-When moving to a production environment:
-1. **Database**: Replace the default SQLite database with a production-grade PostgreSQL instance by updating the `DATABASE_URL`.
-2. **Gunicorn Workers**: The Dockerfile currently runs `uvicorn` directly. For high-throughput production, consider wrapping `uvicorn` in `gunicorn` with multiple worker processes.
-3. **CORS Security**: Ensure `CORS_ORIGINS` is strictly limited to your actual frontend domain names to prevent unauthorized API access.
+- **CI**: On every push or pull request, the `ci.yml` workflow installs dependencies, runs `flake8` for strict Python linting, trains the `distilbert` LoRA classifier, and runs all 184 `pytest` tests with coverage reporting.
+- **CD**: Upon a successful merge to `main`, Render's Auto-Deploy webhook automatically pulls the latest commit, builds the Docker image, and rolls it out with zero downtime.

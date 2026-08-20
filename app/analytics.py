@@ -14,7 +14,6 @@ In-memory stats (counters) reflect only the current session.
 """
 
 import logging
-from typing import Optional
 
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -72,14 +71,21 @@ def get_ticket_stats(db: Session) -> dict:
     by_sentiment = {row[0]: row[1] for row in sentiment_rows}
 
     # AI reply stats
-    total_with_reply = db.query(func.count(Ticket.id)).filter(Ticket.reply.isnot(None)).scalar() or 0
-    ai_generated = db.query(func.count(Ticket.id)).filter(Ticket.is_ai_reply.is_(True)).scalar() or 0
+    total_with_reply = db.query(
+        func.count(
+            Ticket.id)).filter(
+        Ticket.reply.isnot(None)).scalar() or 0
+    ai_generated = db.query(func.count(Ticket.id)).filter(
+        Ticket.is_ai_reply.is_(True)).scalar() or 0
     fallback = total_with_reply - ai_generated
 
     # Average confidence (may be None for old records without this column)
     try:
-        avg_confidence_result = db.query(func.avg(Ticket.ml_confidence)).scalar()
-        avg_confidence = round(float(avg_confidence_result), 4) if avg_confidence_result else None
+        avg_confidence_result = db.query(
+            func.avg(Ticket.ml_confidence)).scalar()
+        avg_confidence = round(
+            float(avg_confidence_result),
+            4) if avg_confidence_result else None
     except Exception:
         avg_confidence = None
 

@@ -32,3 +32,4 @@ test_support.db
 # Scratch files
 fix_test_header.py
 *.log
+models/tmp_trainer/

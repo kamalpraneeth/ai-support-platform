@@ -42,7 +42,8 @@ logger = logging.getLogger(__name__)
 # Configuration thresholds (tunable without code changes)
 # ---------------------------------------------------------------------------
 
-MIN_RESPONSE_LENGTH = 80          # characters — shorter replies are flagged incomplete
+# characters — shorter replies are flagged incomplete
+MIN_RESPONSE_LENGTH = 80
 MAX_RESPONSE_LENGTH = 2000        # characters — extremely long replies are flagged
 MIN_WORD_COUNT = 15               # words — below this is too short to be useful
 RELEVANCE_OVERLAP_THRESHOLD = 0.05  # fraction of ticket terms in response
@@ -51,8 +52,10 @@ QUALITY_SCORE_THRESHOLD = 0.55    # below this -> needs_regeneration = True
 
 # Safety patterns: strings that should NOT appear in a customer support reply
 UNSAFE_PATTERNS = [
-    r"\b\d{10,}\b",                  # Very long number sequences (fake phone/account numbers)
-    r"http[s]?://(?!platform\.com|docs\.platform\.com|status\.platform\.com)",  # External links
+    # Very long number sequences (fake phone/account numbers)
+    r"\b\d{10,}\b",
+    # External links
+    r"http[s]?://(?!platform\.com|docs\.platform\.com|status\.platform\.com)",
     r"\b(?:your account number is|your password is)\b",  # Credential disclosure
     r"\bI cannot help with that\b",  # Unhelpful non-answer without escalation
 ]
@@ -65,7 +68,12 @@ NEXT_STEP_SIGNALS = [
 ]
 
 # Sign-off signals
-SIGNOFF_SIGNALS = ["support team", "regards", "sincerely", "best,", "warm regards"]
+SIGNOFF_SIGNALS = [
+    "support team",
+    "regards",
+    "sincerely",
+    "best,",
+    "warm regards"]
 
 # Common stop words for TF-IDF-style filtering (we want content words)
 STOP_WORDS = {
@@ -225,7 +233,8 @@ def _check_completeness(response: str) -> tuple[bool, Optional[str]]:
 
     # Check for actionable next step
     response_lower = response.lower()
-    has_next_step = any(signal in response_lower for signal in NEXT_STEP_SIGNALS)
+    has_next_step = any(
+        signal in response_lower for signal in NEXT_STEP_SIGNALS)
     if not has_next_step:
         return False, "Response does not include an actionable next step"
 
@@ -273,7 +282,8 @@ def evaluate_response(
     result = EvaluationResult(
         response_length=len(response),
         word_count=len(response.split()),
-        rag_chunks_available=len(retrieved_chunk_contents) if retrieved_chunk_contents is not None else 0,
+        rag_chunks_available=len(
+            retrieved_chunk_contents) if retrieved_chunk_contents is not None else 0,
     )
 
     failure_reasons = []
@@ -284,10 +294,12 @@ def evaluate_response(
         failure_reasons.append(completeness_reason)
 
     # --- Relevance check ---
-    result.relevant, result.relevance_score = _check_relevance(ticket_text, response)
+    result.relevant, result.relevance_score = _check_relevance(
+        ticket_text, response)
     if not result.relevant:
         failure_reasons.append(
-            f"Low relevance: only {result.relevance_score:.0%} of ticket terms in response"
+            f"Low relevance: only {
+                result.relevance_score:.0%} of ticket terms in response"
         )
 
     # --- Safety check ---
@@ -316,9 +328,11 @@ def evaluate_response(
     completeness_score = 1.0 if result.complete else 0.0
     safety_score = 1.0 if result.safe else 0.0
 
-    # Groundedness score: use raw float if KB chunks available, else neutral 0.5
+    # Groundedness score: use raw float if KB chunks available, else neutral
+    # 0.5
     if retrieved_chunk_contents:
-        g_score = min(1.0, result.groundedness_score * 8.0)  # scale up from ~0.1 range
+        g_score = min(1.0, result.groundedness_score *
+                      8.0)  # scale up from ~0.1 range
     else:
         g_score = 0.5  # neutral when no context
 
@@ -332,7 +346,8 @@ def evaluate_response(
 
     # --- Regeneration decision ---
     result.needs_regeneration = result.quality_score < QUALITY_SCORE_THRESHOLD or not result.safe
-    result.failure_reason = "; ".join(failure_reasons) if failure_reasons else None
+    result.failure_reason = "; ".join(
+        failure_reasons) if failure_reasons else None
 
     logger.debug(
         "Response evaluation: quality=%.3f relevant=%s grounded=%s safe=%s complete=%s",

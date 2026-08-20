@@ -29,7 +29,6 @@ Limitations (documented honestly):
 import logging
 from dataclasses import dataclass
 
-import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -96,7 +95,8 @@ class KnowledgeRetriever:
         This method is called once at application startup (lifespan event).
         """
         if not documents:
-            logger.warning("KnowledgeRetriever: no documents provided. Retrieval will return empty results.")
+            logger.warning(
+                "KnowledgeRetriever: no documents provided. Retrieval will return empty results.")
             self._is_built = True
             return
 
@@ -151,7 +151,8 @@ class KnowledgeRetriever:
             different vocabulary from the knowledge base article.
         """
         if not self._is_built:
-            raise RuntimeError("KnowledgeRetriever.build_index() must be called before retrieve().")
+            raise RuntimeError(
+                "KnowledgeRetriever.build_index() must be called before retrieve().")
 
         if not self._documents or self._vectorizer is None:
             return []
@@ -163,10 +164,13 @@ class KnowledgeRetriever:
         similarities = cosine_similarity(query_vector, self._doc_matrix)[0]
 
         # Build scored results
-        scored: list[tuple[float, float, bool, int]] = []  # (boosted, raw, matched, idx)
-        for idx, (doc, raw_score) in enumerate(zip(self._documents, similarities)):
+        # (boosted, raw, matched, idx)
+        scored: list[tuple[float, float, bool, int]] = []
+        for idx, (doc, raw_score) in enumerate(
+                zip(self._documents, similarities)):
             raw_score = float(raw_score)
-            category_matched = (category is not None and doc.category == category)
+            category_matched = (
+                category is not None and doc.category == category)
             boost = self.category_boost if category_matched else 0.0
             boosted_score = min(1.0, raw_score + boost)
             scored.append((boosted_score, raw_score, category_matched, idx))

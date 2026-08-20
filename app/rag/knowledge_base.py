@@ -57,7 +57,8 @@ class KBDocument:
         }
 
 
-def _validate_document(raw: dict, source_file: str, idx: int) -> Optional[KBDocument]:
+def _validate_document(raw: dict, source_file: str,
+                       idx: int) -> Optional[KBDocument]:
     """
     Validate and parse a single raw document dict.
 
@@ -78,7 +79,10 @@ def _validate_document(raw: dict, source_file: str, idx: int) -> Optional[KBDocu
     tags = raw.get("tags", [])
 
     if not doc_id or not title or not content:
-        logger.warning("Skipping document #%d in %s: empty required field", idx, source_file)
+        logger.warning(
+            "Skipping document #%d in %s: empty required field",
+            idx,
+            source_file)
         return None
 
     if category not in VALID_CATEGORIES:
@@ -130,10 +134,14 @@ def load_knowledge_base(kb_dir: Path = KB_DIR) -> list[KBDocument]:
             with open(json_file, encoding="utf-8") as f:
                 raw_docs = json.load(f)
         except json.JSONDecodeError as exc:
-            raise ValueError(f"Malformed JSON in knowledge base file {json_file}: {exc}") from exc
+            raise ValueError(
+                f"Malformed JSON in knowledge base file {json_file}: {exc}") from exc
 
         if not isinstance(raw_docs, list):
-            logger.warning("Skipping %s: expected a JSON array, got %s", json_file.name, type(raw_docs))
+            logger.warning(
+                "Skipping %s: expected a JSON array, got %s",
+                json_file.name,
+                type(raw_docs))
             continue
 
         file_count = 0
@@ -143,7 +151,10 @@ def load_knowledge_base(kb_dir: Path = KB_DIR) -> list[KBDocument]:
                 continue
 
             if doc.doc_id in seen_ids:
-                logger.warning("Duplicate document ID '%s' in %s — skipping", doc.doc_id, json_file.name)
+                logger.warning(
+                    "Duplicate document ID '%s' in %s — skipping",
+                    doc.doc_id,
+                    json_file.name)
                 continue
 
             seen_ids.add(doc.doc_id)

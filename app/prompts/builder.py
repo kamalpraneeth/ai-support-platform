@@ -35,13 +35,16 @@ class PromptPayload:
     template_name: str
     template_version: str
     rag_chunks_used: int
+    # [{'role': 'user'/'assistant', 'content': '...'}]
+    chat_history: list[dict] | None = None
 
     def to_messages(self) -> list[dict]:
         """Return the prompt in Groq/OpenAI chat messages format."""
-        return [
-            {"role": "system", "content": self.system_message},
-            {"role": "user", "content": self.user_message},
-        ]
+        messages = [{"role": "system", "content": self.system_message}]
+        if self.chat_history:
+            messages.extend(self.chat_history)
+        messages.append({"role": "user", "content": self.user_message})
+        return messages
 
 
 def build_support_prompt(
@@ -51,6 +54,7 @@ def build_support_prompt(
     sentiment: str,
     retrieved_chunks: list[RetrievedChunk],
     cv_objects: list[dict] | None = None,
+    chat_history: list[dict] | None = None,
     template: PromptTemplate = SUPPORT_REPLY_V1,
 ) -> PromptPayload:
     """
@@ -63,6 +67,7 @@ def build_support_prompt(
         sentiment: VADER sentiment (Positive/Neutral/Negative).
         retrieved_chunks: RAG-retrieved knowledge base chunks.
         cv_objects: Optional list of objects detected by Computer Vision.
+        chat_history: Optional multi-turn conversation history.
         template: The PromptTemplate to use (default: SUPPORT_REPLY_V1).
 
     Returns:
@@ -82,14 +87,19 @@ def build_support_prompt(
         f"Sentiment: {sentiment}",
     ]
     if urgency == "High":
-        context_lines.append("Note: This is a HIGH URGENCY ticket. Prioritize acknowledgment and clear next steps.")
+        context_lines.append(
+            "Note: This is a HIGH URGENCY ticket. Prioritize acknowledgment and clear next steps.")
     elif sentiment == "Negative":
-        context_lines.append("Note: The customer appears frustrated. Be especially empathetic in your response.")
+        context_lines.append(
+            "Note: The customer appears frustrated. Be especially empathetic in your response.")
 
     if cv_objects:
         labels = [obj["label"] for obj in cv_objects]
-        context_lines.append(f"Image Upload: The user attached an image. Detected objects: {', '.join(labels)}.")
-        context_lines.append("Note: Acknowledge these items in your response if relevant to their query.")
+        context_lines.append(
+            f"Image Upload: The user attached an image. Detected objects: {
+                ', '.join(labels)}.")
+        context_lines.append(
+            "Note: Acknowledge these items in your response if relevant to their query.")
 
     context_block = "\n".join(context_lines)
 
@@ -136,4 +146,5 @@ def build_support_prompt(
         template_name=active_template.name,
         template_version=active_template.version,
         rag_chunks_used=rag_chunks_used,
+        chat_history=chat_history,
     )

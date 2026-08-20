@@ -39,7 +39,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine, get_db
-from app.models import Ticket
+from app.models import Ticket, ChatSession, ChatMessage
 from app.ml.classifier import load_model, predict_with_confidence
 from app.ml.urgency import score_urgency
 from app.ml.sentiment import analyze_sentiment
@@ -49,6 +49,7 @@ from app.rag.retriever import KnowledgeRetriever
 from app.analytics import get_ticket_stats, get_ai_stats, get_model_metrics, get_full_analytics
 from app.monitoring import log_ml_event, log_api_request, get_health_status, counters
 from app.cv import validate_image_file, load_and_preprocess_image, cv_detector, ImageValidationError
+from app.cv.ocr import extract_text
 
 # Load .env file (if present) — no-op if not found
 load_dotenv()
@@ -63,7 +64,8 @@ SERVICENOW_API_ID = os.getenv("SERVICENOW_API_ID", "incident_intake")
 # CORS: configurable via env var, defaults to all origins (dev-friendly)
 # In production, set ALLOWED_ORIGINS=https://yourdomain.com
 _raw_origins = os.getenv("ALLOWED_ORIGINS", "*")
-ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",")] if _raw_origins != "*" else ["*"]
+ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",")
+                   ] if _raw_origins != "*" else ["*"]
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -94,7 +96,9 @@ async def lifespan(app: FastAPI):
     documents = load_knowledge_base()
     _retriever = KnowledgeRetriever()
     _retriever.build_index(documents)
-    logger.info("RAG retriever ready: %d documents indexed.", _retriever.document_count)
+    logger.info(
+        "RAG retriever ready: %d documents indexed.",
+        _retriever.document_count)
 
     logger.info("App ready. v2.0.0")
     yield
@@ -147,7 +151,8 @@ class TicketResponse(BaseModel):
 
 
 class ReplyRequest(BaseModel):
-    ticket_id: int = Field(..., description="ID of a previously submitted ticket")
+    ticket_id: int = Field(...,
+                           description="ID of a previously submitted ticket")
 
 
 class ReplyResponse(BaseModel):
@@ -161,14 +166,33 @@ class ReplyResponse(BaseModel):
     prompt_template: str
 
 
+class ChatSessionResponse(BaseModel):
+    session_id: int
+    message: str
+
+
+class ChatMessageRequest(BaseModel):
+    session_id: int = Field(..., description="ID of the chat session")
+    message: str = Field(..., min_length=2, description="The user's message")
+
+
+class ChatMessageResponse(BaseModel):
+    session_id: int
+    reply: str
+    is_ai_generated: bool
+    escalated: bool
+
+
 # ---------------------------------------------------------------------------
 # ServiceNow Dispatcher (preserved from v1.0.0)
 # ---------------------------------------------------------------------------
 
-async def send_to_servicenow(ticket_text: str, category: str, urgency: str, sentiment: str):
+async def send_to_servicenow(
+        ticket_text: str, category: str, urgency: str, sentiment: str):
     """Asynchronously forwards ticket classification metadata to ServiceNow PDI."""
     if not all([SERVICENOW_INSTANCE, SERVICENOW_USER, SERVICENOW_PASS]):
-        logger.info("ServiceNow credentials not fully set. Skipping PDI ingestion.")
+        logger.info(
+            "ServiceNow credentials not fully set. Skipping PDI ingestion.")
         return
 
     instance_url = SERVICENOW_INSTANCE.rstrip("/")
@@ -188,7 +212,9 @@ async def send_to_servicenow(ticket_text: str, category: str, urgency: str, sent
                 url,
                 json=payload,
                 auth=(SERVICENOW_USER, SERVICENOW_PASS),
-                headers={"Content-Type": "application/json", "Accept": "application/json"},
+                headers={
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"},
                 timeout=12.0,
             )
             if response.status_code == 201:
@@ -220,7 +246,8 @@ def health_check():
     """
     model_loaded = _classifier is not None
     retriever_ready = _retriever is not None and _retriever.is_ready
-    return get_health_status(model_loaded=model_loaded, retriever_ready=retriever_ready)
+    return get_health_status(model_loaded=model_loaded,
+                             retriever_ready=retriever_ready)
 
 
 @app.get("/", response_class=HTMLResponse, tags=["Frontend"])
@@ -295,18 +322,20 @@ def submit_ticket(
     )
 
 
-@app.post("/ticket/with-image", response_model=TicketResponse, tags=["Tickets"])
+@app.post("/ticket/with-image",
+          response_model=TicketResponse, tags=["Tickets"])
 async def submit_ticket_with_image(
     background_tasks: BackgroundTasks,
     text: str = Form(..., min_length=5, description="The support ticket text"),
-    image: UploadFile = File(..., description="Image of the product, error, or damage"),
+    image: UploadFile = File(...,
+                             description="Image of the product, error, or damage"),
     db: Session = Depends(get_db),
 ):
     """
     Submit a support ticket alongside an image for Computer Vision analysis.
-    
+
     The image is validated, preprocessed (OpenCV), and analyzed (YOLOv8) to detect
-    objects relevant to the ticket (e.g., laptops, phones). Detected objects are 
+    objects relevant to the ticket (e.g., laptops, phones). Detected objects are
     passed to the AI Orchestrator to improve the final reply.
     """
     text_clean = text.strip()
@@ -318,7 +347,9 @@ async def submit_ticket_with_image(
     except ImageValidationError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception:
-        raise HTTPException(status_code=400, detail="Failed to read image upload.")
+        raise HTTPException(
+            status_code=400,
+            detail="Failed to read image upload.")
 
     # 2. Computer Vision Pipeline
     cv_metrics = {}
@@ -328,19 +359,34 @@ async def submit_ticket_with_image(
         # Preprocess (OpenCV)
         img_array, prep_lat = load_and_preprocess_image(file_bytes)
         cv_metrics["preprocessing_ms"] = round(prep_lat, 2)
-        
+
         # Detect (YOLOv8)
         detected_objects, inf_lat = cv_detector.detect(img_array)
         cv_metrics["inference_ms"] = round(inf_lat, 2)
-        cv_metrics["total_cv_latency_ms"] = round(prep_lat + inf_lat, 2)
-        
+
+        # Extract Text (easyocr)
+        import time
+        t0 = time.perf_counter()
+        ocr_text = extract_text(img_array)
+        ocr_lat = (time.perf_counter() - t0) * 1000
+        cv_metrics["ocr_ms"] = round(ocr_lat, 2)
+
+        cv_metrics["total_cv_latency_ms"] = round(
+            prep_lat + inf_lat + ocr_lat, 2)
+
+        # Append extracted text to the user's text for ML/RAG
+        if ocr_text:
+            text_clean += f" \n\n[Extracted text from screenshot]: {ocr_text}"
+
     except Exception as e:
         logger.error("Computer Vision pipeline failed: %s", e)
         cv_metrics["error"] = str(e)
-        # We don't fail the ticket submission if CV fails, we just proceed without CV data
+        # We don't fail the ticket submission if CV fails, we just proceed
+        # without CV data
 
     # 3. Core ML Pipeline
-    category, confidence = predict_with_confidence(text_clean, model=_classifier)
+    category, confidence = predict_with_confidence(
+        text_clean, model=_classifier)
     urgency = score_urgency(text_clean)
     sentiment = analyze_sentiment(text_clean)
 
@@ -362,7 +408,8 @@ async def submit_ticket_with_image(
         escalated=escalated,
         has_image=has_image,
         cv_metrics=json.dumps(cv_metrics) if cv_metrics else None,
-        detected_objects=json.dumps(detected_objects) if detected_objects else None,
+        detected_objects=json.dumps(
+            detected_objects) if detected_objects else None,
     )
     db.add(ticket)
     db.commit()
@@ -370,10 +417,16 @@ async def submit_ticket_with_image(
 
     logger.info(
         "TicketWithImage #%d: category=%s conf=%.3f objects=%d CV_lat=%.1fms",
-        ticket.id, category, confidence, len(detected_objects), cv_metrics.get("total_cv_latency_ms", 0.0)
+        ticket.id, category, confidence, len(
+            detected_objects), cv_metrics.get("total_cv_latency_ms", 0.0)
     )
 
-    background_tasks.add_task(send_to_servicenow, text_clean, category, urgency, sentiment)
+    background_tasks.add_task(
+        send_to_servicenow,
+        text_clean,
+        category,
+        urgency,
+        sentiment)
 
     return TicketResponse(
         id=ticket.id,
@@ -411,7 +464,7 @@ def get_ticket_reply(payload: ReplyRequest, db: Session = Depends(get_db)):
     log_api_request("/ticket/reply", success=True)
 
     # Run the full AI orchestration pipeline
-    
+
     # Parse CV objects if present
     cv_objects = None
     if ticket.detected_objects:
@@ -462,9 +515,94 @@ def get_ticket_reply(payload: ReplyRequest, db: Session = Depends(get_db)):
     )
 
 
+@app.post("/chat/session", response_model=ChatSessionResponse, tags=["Chat"])
+def create_chat_session(db: Session = Depends(get_db)):
+    """Create a new multi-turn chat session."""
+    session = ChatSession()
+    db.add(session)
+    db.commit()
+    db.refresh(session)
+
+    logger.info("Created new ChatSession #%d", session.id)
+    return ChatSessionResponse(
+        session_id=session.id,
+        message="Chat session created successfully."
+    )
+
+
+@app.post("/chat/message", response_model=ChatMessageResponse, tags=["Chat"])
+def send_chat_message(payload: ChatMessageRequest,
+                      db: Session = Depends(get_db)):
+    """
+    Send a message to an ongoing chat session.
+
+    Maintains context of previous messages and orchestrates the AI reply
+    using the exact same RAG + ML pipeline as tickets.
+    """
+    session = db.query(ChatSession).filter(
+        ChatSession.id == payload.session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Chat session not found.")
+
+    log_api_request("/chat/message", success=True)
+
+    # Save user message
+    user_msg = ChatMessage(
+        session_id=session.id,
+        role="user",
+        content=payload.message)
+    db.add(user_msg)
+    db.commit()
+
+    # Fetch previous messages for context
+    # Limit to last 6 messages (3 turns) to prevent context window explosion
+    history_records = db.query(ChatMessage).filter(
+        ChatMessage.session_id == session.id,
+        ChatMessage.id < user_msg.id
+    ).order_by(ChatMessage.id.desc()).limit(6).all()
+
+    history_records.reverse()
+    chat_history = [{"role": msg.role, "content": msg.content}
+                    for msg in history_records]
+
+    # Run the orchestration pipeline
+    # We use a default category and confidence for pure chat, or we could run ML on the latest message
+    # To keep it robust, let's run ML on the user's latest message to drive
+    # RAG category boosting
+    category, confidence = predict_with_confidence(
+        payload.message, model=_classifier)
+    urgency = score_urgency(payload.message)
+    sentiment = analyze_sentiment(payload.message)
+
+    result = orchestrate(
+        ticket_text=payload.message,
+        category=category,
+        confidence=confidence,
+        urgency=urgency,
+        sentiment=sentiment,
+        retriever=_retriever,
+        chat_history=chat_history,
+    )
+
+    # Save assistant message
+    ai_msg = ChatMessage(
+        session_id=session.id,
+        role="assistant",
+        content=result.reply)
+    db.add(ai_msg)
+    db.commit()
+
+    return ChatMessageResponse(
+        session_id=session.id,
+        reply=result.reply,
+        is_ai_generated=result.is_ai_generated,
+        escalated=result.escalated,
+    )
+
 # ---------------------------------------------------------------------------
 # Analytics & Metrics Endpoints
 # ---------------------------------------------------------------------------
+
 
 @app.get("/analytics", tags=["Analytics"])
 def full_analytics(db: Session = Depends(get_db)):

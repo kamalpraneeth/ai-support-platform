@@ -40,7 +40,11 @@ logger = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parents[2]
 EVALUATION_REPORT_PATH = ROOT / "models" / "evaluation_report.json"
 
-LABEL_ORDER = ["Account", "Billing", "General", "Technical"]  # sorted alphabetically
+LABEL_ORDER = [
+    "Account",
+    "Billing",
+    "General",
+    "Technical"]  # sorted alphabetically
 
 
 # ---------------------------------------------------------------------------
@@ -197,7 +201,10 @@ def evaluate_model(
     # Use a fresh clone-like pipeline for CV to avoid data leakage
     from app.ml.classifier import build_pipeline as _build_pipeline
     cv_pipeline = _build_pipeline()
-    skf = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=random_state)
+    skf = StratifiedKFold(
+        n_splits=cv_folds,
+        shuffle=True,
+        random_state=random_state)
     cv_scores = cross_val_score(
         cv_pipeline,
         texts,

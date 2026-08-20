@@ -27,13 +27,13 @@ import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # In-memory application counters
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class AppCounters:
@@ -168,9 +168,12 @@ def log_ml_event(
 ) -> None:
     """Log and count a ML prediction event."""
     counters.ml_predictions_total += 1
-    counters.tickets_by_category[category] = counters.tickets_by_category.get(category, 0) + 1
-    counters.tickets_by_urgency[urgency] = counters.tickets_by_urgency.get(urgency, 0) + 1
-    counters.tickets_by_sentiment[sentiment] = counters.tickets_by_sentiment.get(sentiment, 0) + 1
+    counters.tickets_by_category[category] = counters.tickets_by_category.get(
+        category, 0) + 1
+    counters.tickets_by_urgency[urgency] = counters.tickets_by_urgency.get(
+        urgency, 0) + 1
+    counters.tickets_by_sentiment[sentiment] = counters.tickets_by_sentiment.get(
+        sentiment, 0) + 1
 
     if confidence < 0.45:
         counters.ml_low_confidence_total += 1
@@ -225,7 +228,8 @@ def log_llm_event(
     )
 
 
-def log_evaluation_event(quality_score: float, passed: bool, needs_regen: bool) -> None:
+def log_evaluation_event(quality_score: float,
+                         passed: bool, needs_regen: bool) -> None:
     """Log and count a response evaluation event."""
     counters.evaluations_total += 1
     if passed:

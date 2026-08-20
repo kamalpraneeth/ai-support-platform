@@ -25,7 +25,8 @@ from app.rag.retriever import RetrievedChunk
 # Helper: create sample RetrievedChunks for testing
 # ---------------------------------------------------------------------------
 
-def _make_chunk(doc_id: str, title: str, content: str, category: str) -> RetrievedChunk:
+def _make_chunk(doc_id: str, title: str, content: str,
+                category: str) -> RetrievedChunk:
     return RetrievedChunk(
         doc_id=doc_id,
         title=title,

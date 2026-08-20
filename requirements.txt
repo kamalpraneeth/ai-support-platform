@@ -15,3 +15,8 @@ pytest-cov==6.0.0
 opencv-python-headless==4.10.0.84
 ultralytics==8.3.0
 Pillow==10.4.0
+transformers
+peft
+torch
+datasets
+easyocr

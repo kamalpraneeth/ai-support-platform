@@ -20,6 +20,10 @@ Pipeline:
     Save classifier.pkl + evaluation_report.json
 """
 
+from app.ml.evaluate import evaluate_model, save_evaluation_report
+from app.ml.classifier import build_pipeline, MODEL_PATH
+from app.data_pipeline import get_clean_texts_and_labels, DATA_PATH
+import logging
 import pickle
 import sys
 import warnings
@@ -29,11 +33,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-import logging
-
-from app.data_pipeline import get_clean_texts_and_labels, DATA_PATH
-from app.ml.classifier import build_pipeline, MODEL_PATH
-from app.ml.evaluate import evaluate_model, save_evaluation_report
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -53,18 +52,28 @@ def train_and_save() -> None:
     print(f"[1/4] Loading and validating data from {DATA_PATH} ...")
     texts, labels = get_clean_texts_and_labels(DATA_PATH)
     n_classes = len(set(labels))
-    print(f"      {len(texts)} clean samples | {n_classes} classes: {sorted(set(labels))}")
+    print(
+        f"      {
+            len(texts)} clean samples | {n_classes} classes: {
+            sorted(
+                set(labels))}")
 
     # --- Evaluation on train/test split ---
     print("[2/4] Evaluating model (80/20 stratified split + 5-fold CV) ...")
     eval_pipeline = build_pipeline()
-    metrics = evaluate_model(eval_pipeline, texts, labels, test_size=0.2, random_state=42)
+    metrics = evaluate_model(
+        eval_pipeline,
+        texts,
+        labels,
+        test_size=0.2,
+        random_state=42)
 
     print("\n      -- Evaluation Results -----------------------------------------")
     print(f"      Test accuracy (20% hold-out): {metrics.test_accuracy:.4f}")
     print(f"      Macro F1:                     {metrics.macro_f1:.4f}")
     print(f"      Weighted F1:                  {metrics.weighted_f1:.4f}")
-    print(f"      CV accuracy (5-fold):         {metrics.cv_mean:.4f} ± {metrics.cv_std:.4f}")
+    print(
+        f"      CV accuracy (5-fold):         {metrics.cv_mean:.4f} ± {metrics.cv_std:.4f}")
     print()
     print("      Per-class metrics:")
     for label, cls in metrics.per_class.items():
@@ -73,11 +82,12 @@ def train_and_save() -> None:
     print()
     print("      Confusion matrix (rows=actual, cols=predicted):")
     print(f"      Labels: {metrics.confusion_matrix_labels}")
-    for row_label, cm_row in zip(metrics.confusion_matrix_labels, metrics.confusion_matrix):
+    for row_label, cm_row in zip(
+            metrics.confusion_matrix_labels, metrics.confusion_matrix):
         print(f"        {row_label:<12} {cm_row}")
 
     save_evaluation_report(metrics)
-    print(f"\n      Evaluation report saved to models/evaluation_report.json")
+    print("\n      Evaluation report saved to models/evaluation_report.json")
 
     # --- Full-dataset retrain (final production model) ---
     print("\n[3/4] Retraining on full dataset for production model ...")
@@ -104,7 +114,8 @@ def train_and_save() -> None:
         status = "[OK]" if pred == expected else "[FAIL]"
         if pred != expected:
             all_pass = False
-        print(f"      {status} '{text[:45]}' -> {pred} (conf={proba:.3f}, expected {expected})")
+        print(
+            f"      {status} '{text[:45]}' -> {pred} (conf={proba:.3f}, expected {expected})")
 
     print()
     if all_pass:

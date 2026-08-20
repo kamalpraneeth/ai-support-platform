@@ -13,7 +13,7 @@ Tests cover:
 import os
 import pytest
 
-from app.ai_orchestrator import orchestrate, OrchestratorResult, FALLBACK_REPLY
+from app.ai_orchestrator import orchestrate, OrchestratorResult
 from app.rag.knowledge_base import load_knowledge_base, KB_DIR
 from app.rag.retriever import KnowledgeRetriever
 

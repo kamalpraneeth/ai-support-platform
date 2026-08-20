@@ -159,11 +159,18 @@ def _call_llm(messages: list[dict]) -> tuple[str, float, bool]:
         )
         latency_ms = (time.perf_counter() - start) * 1000
         text = response.choices[0].message.content.strip()
-        logger.info("LLM call success: %.1f ms, %d chars", latency_ms, len(text))
+        logger.info(
+            "LLM call success: %.1f ms, %d chars",
+            latency_ms,
+            len(text))
         return text, latency_ms, True
 
     except Exception as exc:
-        logger.error("LLM call failed [%s]: %s", type(exc).__name__, str(exc)[:200])
+        logger.error(
+            "LLM call failed [%s]: %s",
+            type(exc).__name__,
+            str(exc)[
+                :200])
         return "", 0.0, False
 
 
@@ -179,6 +186,7 @@ def orchestrate(
     sentiment: str,
     retriever: Optional[KnowledgeRetriever] = None,
     cv_objects: Optional[list[dict]] = None,
+    chat_history: Optional[list[dict]] = None,
 ) -> OrchestratorResult:
     """
     Execute the full AI orchestration pipeline for a ticket.
@@ -191,8 +199,9 @@ def orchestrate(
         sentiment: VADER sentiment.
         retriever: Initialized KnowledgeRetriever instance (optional).
                    If None, RAG step is skipped.
-        cv_objects: Optional list of objects detected by Computer Vision, e.g., 
+        cv_objects: Optional list of objects detected by Computer Vision, e.g.,
                     [{"label": "laptop", "confidence": 0.91}].
+        chat_history: Optional multi-turn conversation history.
 
     Returns:
         OrchestratorResult with the final reply and all pipeline metadata.
@@ -202,7 +211,9 @@ def orchestrate(
     input_validation = validate_input(ticket_text)
     if not input_validation.is_valid:
         counters.injection_attempts_total += 1
-        logger.warning("Input rejected by Responsible AI: %s", input_validation.rejection_reason)
+        logger.warning(
+            "Input rejected by Responsible AI: %s",
+            input_validation.rejection_reason)
         return OrchestratorResult(
             reply=(
                 "We could not process your request as submitted. "
@@ -219,14 +230,16 @@ def orchestrate(
         )
 
     # ---- Step 2: Escalation Check ----
-    escalated, escalation_reason = should_escalate(category, confidence, urgency, sentiment)
+    escalated, escalation_reason = should_escalate(
+        category, confidence, urgency, sentiment)
     if escalated:
         log_escalation_event(escalation_reason, category, urgency)
 
     # ---- Step 3: RAG Retrieval ----
     retrieved_chunks: list[RetrievedChunk] = []
     if retriever is not None and retriever.is_ready:
-        retrieved_chunks = retriever.retrieve(ticket_text, category=category, top_k=3)
+        retrieved_chunks = retriever.retrieve(
+            ticket_text, category=category, top_k=3)
         top_score = retrieved_chunks[0].similarity_score if retrieved_chunks else 0.0
         log_rag_event(
             query_length=len(ticket_text),
@@ -244,6 +257,7 @@ def orchestrate(
         sentiment=sentiment,
         retrieved_chunks=retrieved_chunks,
         cv_objects=cv_objects,
+        chat_history=chat_history,
     )
 
     # ---- Step 5 + 6: LLM Call + Evaluation (with one retry) ----
@@ -255,7 +269,8 @@ def orchestrate(
 
     for attempt in range(1 + MAX_REGENERATION_ATTEMPTS):
         attempts = attempt + 1
-        response_text, latency_ms, llm_success = _call_llm(prompt_payload.to_messages())
+        response_text, latency_ms, llm_success = _call_llm(
+            prompt_payload.to_messages())
         total_latency_ms += latency_ms
 
         log_llm_event(
@@ -267,7 +282,9 @@ def orchestrate(
         )
 
         if not llm_success or not response_text:
-            logger.warning("LLM call failed on attempt %d — using fallback", attempts)
+            logger.warning(
+                "LLM call failed on attempt %d — using fallback",
+                attempts)
             break
 
         # ---- Output Validation (Responsible AI) ----
@@ -279,7 +296,9 @@ def orchestrate(
                 attempts, output_validation.rejection_reason,
             )
             if attempt < MAX_REGENERATION_ATTEMPTS:
-                logger.info("Regenerating response (attempt %d)...", attempts + 1)
+                logger.info(
+                    "Regenerating response (attempt %d)...",
+                    attempts + 1)
                 continue
             else:
                 break  # All attempts failed output validation
@@ -313,7 +332,9 @@ def orchestrate(
     if not final_reply:
         final_reply = FALLBACK_REPLY
         is_ai_generated = False
-        logger.info("Using static fallback reply after %d attempt(s)", attempts)
+        logger.info(
+            "Using static fallback reply after %d attempt(s)",
+            attempts)
 
     return OrchestratorResult(
         reply=final_reply,

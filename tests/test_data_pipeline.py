@@ -11,7 +11,6 @@ Tests cover:
 """
 
 import csv
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -21,9 +20,7 @@ from app.data_pipeline import (
     normalize_text,
     run_pipeline,
     get_clean_texts_and_labels,
-    DataRecord,
     DataQualityReport,
-    ValidationError,
     VALID_CATEGORIES,
 )
 
@@ -148,7 +145,8 @@ class TestRunPipeline:
     def test_pipeline_removes_duplicates(self, tmp_path):
         rows = [
             {"text": "I was charged twice for my subscription", "category": "Billing"},
-            {"text": "I was charged twice for my subscription", "category": "Billing"},  # duplicate
+            {"text": "I was charged twice for my subscription",
+                "category": "Billing"},  # duplicate
             {"text": "The app crashes every time", "category": "Technical"},
         ]
         csv_path = _write_temp_csv(rows, tmp_path)
@@ -159,8 +157,11 @@ class TestRunPipeline:
     def test_pipeline_removes_invalid_rows(self, tmp_path):
         rows = [
             {"text": "Valid billing ticket here", "category": "Billing"},
-            {"text": "", "category": "Billing"},                     # invalid: empty text
-            {"text": "Technical issue", "category": "InvalidCat"},  # invalid: bad category
+            # invalid: empty text
+            {"text": "", "category": "Billing"},
+            {"text": "Technical issue",
+             "category": "InvalidCat"},
+            # invalid: bad category
         ]
         csv_path = _write_temp_csv(rows, tmp_path)
         records, report = run_pipeline(csv_path=csv_path, report_path=None)
@@ -180,7 +181,9 @@ class TestRunPipeline:
 
     def test_pipeline_raises_on_missing_file(self):
         with pytest.raises(FileNotFoundError):
-            run_pipeline(csv_path=Path("/nonexistent/path.csv"), report_path=None)
+            run_pipeline(
+                csv_path=Path("/nonexistent/path.csv"),
+                report_path=None)
 
     def test_get_clean_texts_and_labels_returns_lists(self, tmp_path):
         rows = [

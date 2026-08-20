@@ -9,17 +9,16 @@ conftest.py. That fixture:
 """
 
 import os
-import pytest
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# ── Helpers ─────────────────────────────────────────────────────────────
 
 def submit_ticket(client, text: str):
     """Submit a ticket and return the response."""
     return client.post("/ticket", json={"text": text})
 
 
-# ── Health Check Tests ────────────────────────────────────────────────────────
+# ── Health Check Tests ──────────────────────────────────────────────────
 
 class TestHealthEndpoint:
     def test_health_returns_200(self, client):
@@ -34,7 +33,7 @@ class TestHealthEndpoint:
         assert data["status"] == "ok"
 
 
-# ── Frontend Endpoint ─────────────────────────────────────────────────────────
+# ── Frontend Endpoint ───────────────────────────────────────────────────
 
 class TestFrontendEndpoint:
     def test_root_returns_html(self, client):
@@ -49,17 +48,19 @@ class TestFrontendEndpoint:
         assert "ticket-form" in res.text
 
 
-# ── POST /ticket Tests ────────────────────────────────────────────────────────
+# ── POST /ticket Tests ──────────────────────────────────────────────────
 
 class TestSubmitTicketEndpoint:
     def test_submit_valid_ticket_status(self, client):
         """POST /ticket with valid text returns HTTP 200."""
-        res = submit_ticket(client, "I was charged twice for my subscription this month")
+        res = submit_ticket(
+            client, "I was charged twice for my subscription this month")
         assert res.status_code == 200
 
     def test_submit_returns_all_fields(self, client):
         """POST /ticket response must include id, category, urgency, sentiment."""
-        res = submit_ticket(client, "The app crashes every time I try to upload a file")
+        res = submit_ticket(
+            client, "The app crashes every time I try to upload a file")
         data = res.json()
         assert "id" in data
         assert "category" in data
@@ -68,19 +69,23 @@ class TestSubmitTicketEndpoint:
 
     def test_submit_category_is_valid(self, client):
         """Category in response must be one of the four valid values."""
-        res = submit_ticket(client, "I cannot log into my account after the password reset")
+        res = submit_ticket(
+            client, "I cannot log into my account after the password reset")
         data = res.json()
-        assert data["category"] in ("Billing", "Technical", "Account", "General")
+        assert data["category"] in (
+            "Billing", "Technical", "Account", "General")
 
     def test_submit_urgency_is_valid(self, client):
         """Urgency in response must be High, Medium, or Low."""
-        res = submit_ticket(client, "Do you offer a free trial for enterprise customers?")
+        res = submit_ticket(
+            client, "Do you offer a free trial for enterprise customers?")
         data = res.json()
         assert data["urgency"] in ("High", "Medium", "Low")
 
     def test_submit_sentiment_is_valid(self, client):
         """Sentiment in response must be Positive, Neutral, or Negative."""
-        res = submit_ticket(client, "I love the platform but there is a small issue")
+        res = submit_ticket(
+            client, "I love the platform but there is a small issue")
         data = res.json()
         assert data["sentiment"] in ("Positive", "Neutral", "Negative")
 
@@ -101,22 +106,24 @@ class TestSubmitTicketEndpoint:
 
     def test_ticket_id_increments(self, client):
         """Consecutive ticket submissions should have incrementing IDs."""
-        res1 = submit_ticket(client, "First ticket about billing issue with my invoice")
-        res2 = submit_ticket(client, "Second ticket about technical problem with the app")
+        res1 = submit_ticket(
+            client, "First ticket about billing issue with my invoice")
+        res2 = submit_ticket(
+            client, "Second ticket about technical problem with the app")
         assert res2.json()["id"] > res1.json()["id"]
 
     def test_submit_with_image_valid(self, client):
         """POST /ticket/with-image works with a valid image"""
         import io
         from PIL import Image
-        
+
         img = Image.new('RGB', (10, 10), color='red')
         img_bytes = io.BytesIO()
         img.save(img_bytes, format='PNG')
-        
+
         files = {"image": ("test.png", img_bytes.getvalue(), "image/png")}
         data = {"text": "My screen is broken as you can see in the picture."}
-        
+
         res = client.post("/ticket/with-image", data=data, files=files)
         assert res.status_code == 200
         assert "id" in res.json()
@@ -126,18 +133,19 @@ class TestSubmitTicketEndpoint:
         """POST /ticket/with-image rejects invalid mime types"""
         files = {"image": ("test.pdf", b"fake pdf data", "application/pdf")}
         data = {"text": "Here is a PDF of my problem."}
-        
+
         res = client.post("/ticket/with-image", data=data, files=files)
         assert res.status_code == 400
         assert "Unsupported media type" in res.json()["detail"]
 
 
-# ── POST /ticket/reply Tests ──────────────────────────────────────────────────
+# ── POST /ticket/reply Tests ────────────────────────────────────────────
 
 class TestTicketReplyEndpoint:
     def test_reply_returns_200_for_existing_ticket(self, client):
         """POST /ticket/reply with valid ticket_id returns HTTP 200."""
-        ticket_res = submit_ticket(client, "I cannot connect to the API and need help urgently")
+        ticket_res = submit_ticket(
+            client, "I cannot connect to the API and need help urgently")
         ticket_id = ticket_res.json()["id"]
 
         res = client.post("/ticket/reply", json={"ticket_id": ticket_id})
@@ -145,7 +153,8 @@ class TestTicketReplyEndpoint:
 
     def test_reply_response_contains_reply_text(self, client):
         """Reply response must contain a non-empty reply string."""
-        ticket_res = submit_ticket(client, "My account has been suspended without warning")
+        ticket_res = submit_ticket(
+            client, "My account has been suspended without warning")
         ticket_id = ticket_res.json()["id"]
 
         res = client.post("/ticket/reply", json={"ticket_id": ticket_id})
@@ -155,7 +164,8 @@ class TestTicketReplyEndpoint:
 
     def test_reply_contains_is_ai_generated_flag(self, client):
         """Reply response must include the is_ai_generated boolean flag."""
-        ticket_res = submit_ticket(client, "I would like to know more about your pricing plans")
+        ticket_res = submit_ticket(
+            client, "I would like to know more about your pricing plans")
         ticket_id = ticket_res.json()["id"]
 
         res = client.post("/ticket/reply", json={"ticket_id": ticket_id})
@@ -175,7 +185,8 @@ class TestTicketReplyEndpoint:
         """
         os.environ.pop("GROQ_API_KEY", None)
 
-        ticket_res = submit_ticket(client, "I have a general question about your service availability")
+        ticket_res = submit_ticket(
+            client, "I have a general question about your service availability")
         ticket_id = ticket_res.json()["id"]
 
         res = client.post("/ticket/reply", json={"ticket_id": ticket_id})
